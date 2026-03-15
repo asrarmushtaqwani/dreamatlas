@@ -9,9 +9,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Dream text too short' }, { status: 400 })
     }
 
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY is not set')
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
+    }
+
     const analysis = await analyzeDream(text, mood || '')
 
-    // Save to Supabase if user is logged in
     try {
       const supabase = await createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -28,13 +32,11 @@ export async function POST(req: NextRequest) {
           is_public: true,
         })
       }
-    } catch (_) {
-      // Non-fatal: analysis still returns even if save fails
-    }
+    } catch (_) {}
 
     return NextResponse.json(analysis)
-  } catch (err) {
-    console.error('Analysis error:', err)
-    return NextResponse.json({ error: 'Analysis failed' }, { status: 500 })
+  } catch (err: any) {
+    console.error('Analysis error:', err?.message || err)
+    return NextResponse.json({ error: err?.message || 'Analysis failed' }, { status: 500 })
   }
 }
