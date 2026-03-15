@@ -36,7 +36,7 @@ const res = await fetch(
   if (!res.ok) throw new Error('Analysis failed')
 
   const data = await res.json()
-  const raw = data.content?.[0]?.text || '{}'
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}'
   const clean = raw.replace(/```json|```/g, '').trim()
   return JSON.parse(clean) as DreamAnalysis
 }
