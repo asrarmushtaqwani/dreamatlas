@@ -33,7 +33,10 @@ const res = await fetch(
   }
 )
 
-  if (!res.ok) throw new Error('Analysis failed')
+ if (!res.ok) {
+  const err = await res.text()
+  throw new Error(`Gemini error ${res.status}: ${err}`)
+}
 
   const data = await res.json()
   const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}'
