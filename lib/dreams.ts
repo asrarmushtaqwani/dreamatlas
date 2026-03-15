@@ -22,19 +22,16 @@ Rules:
 Dream: "${text.slice(0, 600)}"
 Mood: ${mood || 'unspecified'}`
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+const res = await fetch(
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+  {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY!,
-      'anthropic-version': '2023-06-01',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
-      messages: [{ role: 'user', content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }]
     }),
-  })
+  }
+)
 
   if (!res.ok) throw new Error('Analysis failed')
 
