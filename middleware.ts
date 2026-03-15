@@ -1,5 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -21,21 +21,7 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
-
-  const protectedPaths = ['/map', '/log', '/journal', '/insight', '/worlds', '/profile']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
-
-  // Redirect unauthenticated users to login (but allow map as public preview)
-  if (!user && request.nextUrl.pathname.startsWith('/journal')) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
-  }
-
-  // Redirect logged-in users away from auth pages
-  if (user && (request.nextUrl.pathname.startsWith('/auth/'))) {
-    return NextResponse.redirect(new URL('/map', request.url))
-  }
-
+  await supabase.auth.getUser()
   return supabaseResponse
 }
 

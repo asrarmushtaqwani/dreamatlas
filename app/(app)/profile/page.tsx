@@ -1,175 +1,97 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Dream, Profile } from '@/types'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
-
-function StatCard({ value, label }: { value: string | number; label: string }) {
-  return (
-    <div className="card" style={{ padding: '16px 18px' }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 300 }}>{value}</div>
-      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2, letterSpacing: '0.5px' }}>{label}</div>
-    </div>
-  )
-}
 
 export default function ProfilePage() {
   const router = useRouter()
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [dreams, setDreams] = useState<Dream[]>([])
-  const [loading, setLoading] = useState(true)
+  const [profile, setProfile] = useState<any>(null)
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
       setEmail(user.email || '')
-
-      const [{ data: prof }, { data: drms }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user.id).single(),
-        supabase.from('dreams').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-      ])
-      setProfile(prof)
-      setDreams(drms || [])
-      setLoading(false)
+      supabase.from('profiles').select('*').eq('id', user.id).single()
+        .then(({ data }) => { if (data) setProfile(data); setLoading(false) })
     })
   }, [router])
 
-  async function handleSignOut() {
+  async function signOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
   }
 
-  // Archetype breakdown
-  const archetypeCounts: Record<string, number> = {}
-  dreams.forEach(d => d.archetypes?.forEach(a => { archetypeCounts[a] = (archetypeCounts[a] || 0) + 1 }))
-  const sortedArchetypes = Object.entries(archetypeCounts).sort((a, b) => b[1] - a[1])
-  const maxCount = sortedArchetypes[0]?.[1] || 1
-
-  // Mood breakdown
-  const moodCounts: Record<string, number> = {}
-  dreams.forEach(d => { if (d.mood) moodCounts[d.mood] = (moodCounts[d.mood] || 0) + 1 })
-  const topMood = Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
-
-  if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)', fontSize: 14 }}>
-      loading your atlas...
-    </div>
-  )
+  const topColor = profile?.top_archetype ? ARCHETYPE_COLORS[profile.top_archetype] : 'var(--accent)'
 
   return (
-    <div style={{ minHeight: '100vh', padding: '0 0 100px' }}>
-      {/* Header */}
-      <div style={{ padding: '28px 24px 24px', borderBottom: '0.5px solid var(--border)' }}>
-        {/* Dream name + avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-            background: profile?.avatar_color ? `${profile.avatar_color}25` : 'var(--accent-dim)',
-            border: `0.5px solid ${profile?.avatar_color || 'var(--accent)'}50`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 22,
-          }}>
-            ✦
-          </div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontStyle: 'italic', color: 'var(--text-primary)' }}>
-              {profile?.dream_name || 'wandering dreamer'}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{email}</div>
-          </div>
-        </div>
-
-        {/* Stats grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          <StatCard value={profile?.dream_count || dreams.length} label="Dreams logged" />
-          <StatCard value={profile?.streak || 0} label="Day streak" />
-          <StatCard value={profile?.top_archetype || sortedArchetypes[0]?.[0] || '—'} label="Top archetype" />
-        </div>
+    <div style={{ minHeight: '100vh', paddingBottom: 80 }}>
+      <div style={{ padding: '24px 24px 20px', borderBottom: '0.5px solid var(--border)' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontStyle: 'italic', fontWeight: 300 }}>Profile</div>
       </div>
-
-      {/* Archetype breakdown */}
-      {sortedArchetypes.length > 0 && (
-        <div style={{ padding: '24px 24px 0' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 14 }}>YOUR ARCHETYPE MAP</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {sortedArchetypes.map(([arch, count]) => {
-              const col = ARCHETYPE_COLORS[arch] || 'var(--accent)'
-              const pct = Math.round(count / maxCount * 100)
-              return (
-                <div key={arch}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: col }} />
-                      <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{arch}</span>
-                    </div>
-                    <span style={{ fontSize: 12, color: 'var(--text-tertiary)', fontFamily: 'monospace' }}>
-                      {count} dream{count !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div style={{ height: 3, background: 'var(--surface2)', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', width: `${pct}%`, background: col,
-                      borderRadius: 2, transition: 'width 0.8s ease',
-                    }} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Top mood */}
-      {topMood && (
-        <div style={{ padding: '24px 24px 0' }}>
-          <div style={{ fontSize: 10, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 10 }}>EMOTIONAL SIGNATURE</div>
-          <div className="card" style={{ padding: '16px 18px' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 16, color: 'var(--text-secondary)' }}>
-              Your dreams most often feel <span style={{ color: 'var(--text-primary)' }}>{topMood.toLowerCase()}</span>
+      <div style={{ padding: '24px', maxWidth: 520 }}>
+        {loading ? (
+          <div style={{ color: 'var(--text-tertiary)', fontSize: 14 }}>loading...</div>
+        ) : (
+          <>
+            <div className="card" style={{ padding: '24px', marginBottom: 16, textAlign: 'center' }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%', margin: '0 auto 16px',
+                background: `${topColor}20`, border: `0.5px solid ${topColor}40`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 24, color: topColor,
+              }}>✦</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 22, marginBottom: 4 }}>
+                {profile?.dream_name || 'the wandering dreamer'}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{email}</div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Recent symbols */}
-      {dreams.length > 0 && (() => {
-        const allSymbols = dreams.flatMap(d => d.symbols || [])
-        const symCount: Record<string, number> = {}
-        allSymbols.forEach(s => { symCount[s] = (symCount[s] || 0) + 1 })
-        const topSymbols = Object.entries(symCount).sort((a, b) => b[1] - a[1]).slice(0, 10)
-        if (topSymbols.length === 0) return null
-        return (
-          <div style={{ padding: '24px 24px 0' }}>
-            <div style={{ fontSize: 10, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 10 }}>RECURRING SYMBOLS</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {topSymbols.map(([sym, cnt]) => (
-                <div key={sym} style={{
-                  padding: '6px 14px', borderRadius: 20, fontSize: 12,
-                  background: 'var(--surface)', border: '0.5px solid var(--border)',
-                  color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6,
-                }}>
-                  {sym}
-                  {cnt > 1 && <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>×{cnt}</span>}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+              {[
+                { val: String(profile?.dream_count || 0), label: 'Dreams' },
+                { val: String(profile?.streak || 0),      label: 'Day streak' },
+                { val: profile?.top_archetype || '—',     label: 'Top archetype' },
+              ].map(({ val, label }) => (
+                <div key={label} className="card" style={{ padding: '16px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 300, marginBottom: 4 }}>{val}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{label}</div>
                 </div>
               ))}
             </div>
-          </div>
-        )
-      })()}
 
-      {/* Sign out */}
-      <div style={{ padding: '32px 24px 0' }}>
-        <button
-          onClick={handleSignOut}
-          className="btn-ghost"
-          style={{ width: '100%', color: 'var(--text-tertiary)' }}
-        >
-          sign out
-        </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+              {[
+                { href: '/journal', label: 'View your journal' },
+                { href: '/map',     label: 'Explore the atlas' },
+                { href: '/worlds',  label: 'Browse dreamworlds' },
+              ].map(({ href, label }) => (
+                <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+                  <div className="card" style={{ padding: '14px 18px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{label}</span>
+                    <span style={{ color: 'var(--text-tertiary)' }}>→</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div style={{ padding: '16px 20px', borderRadius: 12, border: '0.5px dashed var(--border)', marginBottom: 24 }}>
+              <div style={{ fontSize: 11, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 10 }}>COMING IN PHASE 2</div>
+              {['Dream Wrapped — your annual psyche map', 'Dream Twin — find your unconscious mirror', 'Privacy controls — full anonymous mode'].map(f => (
+                <div key={f} style={{ fontSize: 13, color: 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <span style={{ color: 'var(--accent)', fontSize: 10 }}>◌</span> {f}
+                </div>
+              ))}
+            </div>
+
+            <button onClick={signOut} className="btn-ghost" style={{ width: '100%', color: 'var(--text-tertiary)' }}>Sign out</button>
+          </>
+        )}
       </div>
     </div>
   )
