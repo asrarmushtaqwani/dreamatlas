@@ -64,11 +64,13 @@ export default function ProfilePage() {
     if (uploadError) { setAvatarUploading(false); return }
 
     const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-    const url = `${data.publicUrl}?t=${Date.now()}` // bust cache
+const url = data.publicUrl
 
-    await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id)
-    setAvatarUrl(url)
-    setAvatarUploading(false)
+await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id)
+
+// Force re-fetch with cache bust only for display, don't save timestamp to DB
+setAvatarUrl(`${url}?t=${Date.now()}`)
+setAvatarUploading(false)
   }
 
   async function signOut() {
