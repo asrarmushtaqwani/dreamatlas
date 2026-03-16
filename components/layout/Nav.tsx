@@ -48,6 +48,25 @@ function UserIcon() {
     </svg>
   )
 }
+function TwinsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="3"/>
+      <circle cx="16" cy="8" r="3"/>
+      <path d="M2 20c0-3 2.7-5 6-5s6 2 6 5"/>
+      <path d="M16 15c2.2.7 4 2.5 4 5"/>
+    </svg>
+  )
+}
+function WrappedIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="3"/>
+      <path d="M3 9h18"/>
+      <path d="M9 21V9"/>
+    </svg>
+  )
+}
 
 export function Sidebar() {
   const path = usePathname()
@@ -71,9 +90,11 @@ export function Sidebar() {
       </Link>
 
       {[
-        { href: '/map',     Icon: MapIcon,    label: 'Atlas' },
-        { href: '/journal', Icon: BookIcon,   label: 'Journal' },
-        { href: '/worlds',  Icon: WorldsIcon, label: 'Worlds' },
+        { href: '/map',          Icon: MapIcon,     label: 'Atlas' },
+        { href: '/journal',      Icon: BookIcon,    label: 'Journal' },
+        { href: '/dreamworlds',  Icon: WorldsIcon,  label: 'Worlds' },
+        { href: '/twins',        Icon: TwinsIcon,   label: 'Twins' },
+        { href: '/wrapped',      Icon: WrappedIcon, label: 'Wrapped' },
       ].map(({ href, Icon, label }) => {
         const active = path.startsWith(href)
         return (
@@ -128,11 +149,11 @@ export function Sidebar() {
 export function MobileNav() {
   const path = usePathname()
   const items = [
-    { href: '/map',     Icon: MapIcon,    label: 'Atlas' },
-    { href: '/journal', Icon: BookIcon,   label: 'Journal' },
-    { href: '/log',     Icon: PlusIcon,   label: null, accent: true },
-    { href: '/worlds',  Icon: WorldsIcon, label: 'Worlds' },
-    { href: '/profile', Icon: UserIcon,   label: 'Profile' },
+    { href: '/map',         Icon: MapIcon,     label: 'Atlas' },
+    { href: '/dreamworlds', Icon: WorldsIcon,  label: 'Worlds' },
+    { href: '/log',         Icon: PlusIcon,    label: null, accent: true },
+    { href: '/twins',       Icon: TwinsIcon,   label: 'Twins' },
+    { href: '/wrapped',     Icon: WrappedIcon, label: 'Wrapped' },
   ]
 
   return (
