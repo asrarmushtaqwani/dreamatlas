@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { DreamTwinMatch } from '@/types'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
@@ -62,6 +63,13 @@ export default function TwinsPage() {
       padding: '64px 24px',
     }}>
       <div style={{ width: '100%', maxWidth: 480, textAlign: 'center' }}>
+
+        <Link href="/map" style={{
+          color: 'rgba(139,111,255,0.4)', fontSize: 12, letterSpacing: '0.2em',
+          textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 24,
+        }}>
+          ← Atlas
+        </Link>
 
         <div style={{ color: 'rgba(139,111,255,0.4)', fontSize: 11, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 24, fontFamily: 'sans-serif' }}>
           Dream Twins
