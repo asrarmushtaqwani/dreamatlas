@@ -57,12 +57,11 @@ export default function TwinsPage() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#070710', color: 'white',
-      fontFamily: "'Crimson Pro', Georgia, serif",
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      padding: '64px 24px',
-    }}>
-      <div style={{ width: '100%', maxWidth: 480, textAlign: 'center' }}>
+  minHeight: '100vh', background: '#070710', color: 'white',
+  fontFamily: "'Crimson Pro', Georgia, serif",
+  padding: '64px 24px',
+}}>
+      <div style={{ width: '100%', maxWidth: 480, textAlign: 'center', margin: '0 auto' }}>
 
         <Link href="/map" style={{
           color: 'rgba(139,111,255,0.4)', fontSize: 12, letterSpacing: '0.2em',
