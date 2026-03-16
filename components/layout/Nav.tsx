@@ -79,7 +79,7 @@ export function Sidebar() {
       position: 'sticky', top: 0, height: '100vh', gap: 4,
     }}>
       {/* Logo */}
-      <Link href="/" style={{ marginBottom: 16, textDecoration: 'none' }}>
+      <Link href="/map" style={{ marginBottom: 16, textDecoration: 'none' }}>
         <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="9" stroke="#8b6fff" strokeWidth="1"/>
