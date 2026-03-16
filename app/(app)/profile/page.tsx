@@ -45,20 +45,26 @@ export default function ProfilePage() {
   const supabase = createClient()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push('/auth/login'); return }
-      setEmail(user.email || '')
-      supabase.from('profiles').select('*').eq('id', user.id).single()
-        .then(({ data }) => {
-          if (data) {
-            setProfile(data)
-            setNameInput(data.dream_name || '')
-            setAvatarUrl(data.avatar_url || null)
-          }
-          setLoading(false)
-        })
-    })
-  }, [router])
+  async function loadProfile() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.push('/auth/login'); return }
+    setEmail(user.email || '')
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
+    if (data) {
+      setProfile(data)
+      setNameInput(data.dream_name || '')
+      setAvatarUrl(data.avatar_url || null)
+    }
+    setLoading(false)
+  }
+  loadProfile()
+}, [])
 
   async function saveName() {
     if (!nameInput.trim()) return
