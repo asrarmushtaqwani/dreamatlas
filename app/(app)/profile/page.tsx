@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -10,19 +10,64 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(true)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState('')
+  const [nameSaving, setNameSaving] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const supabase = createClient()
 
   useEffect(() => {
-    const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
       setEmail(user.email || '')
       supabase.from('profiles').select('*').eq('id', user.id).single()
-        .then(({ data }) => { if (data) setProfile(data); setLoading(false) })
+        .then(({ data }) => {
+          if (data) {
+            setProfile(data)
+            setNameInput(data.dream_name || '')
+            setAvatarUrl(data.avatar_url || null)
+          }
+          setLoading(false)
+        })
     })
   }, [router])
 
+  async function saveName() {
+    if (!nameInput.trim()) return
+    setNameSaving(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('profiles').update({ dream_name: nameInput.trim() }).eq('id', user.id)
+    setProfile((p: any) => ({ ...p, dream_name: nameInput.trim() }))
+    setEditingName(false)
+    setNameSaving(false)
+  }
+
+  async function uploadAvatar(file: File) {
+    setAvatarUploading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const ext = file.name.split('.').pop()
+    const path = `${user.id}/avatar.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true })
+
+    if (uploadError) { setAvatarUploading(false); return }
+
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+    const url = `${data.publicUrl}?t=${Date.now()}` // bust cache
+
+    await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id)
+    setAvatarUrl(url)
+    setAvatarUploading(false)
+  }
+
   async function signOut() {
-    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
   }
@@ -31,27 +76,136 @@ export default function ProfilePage() {
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 80 }}>
+      {/* Header */}
       <div style={{ padding: '24px 24px 20px', borderBottom: '0.5px solid var(--border)' }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontStyle: 'italic', fontWeight: 300 }}>Profile</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontStyle: 'italic', fontWeight: 300 }}>
+          Profile
+        </div>
       </div>
+
       <div style={{ padding: '24px', maxWidth: 520 }}>
         {loading ? (
           <div style={{ color: 'var(--text-tertiary)', fontSize: 14 }}>loading...</div>
         ) : (
           <>
-            <div className="card" style={{ padding: '24px', marginBottom: 16, textAlign: 'center' }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: '50%', margin: '0 auto 16px',
-                background: `${topColor}20`, border: `0.5px solid ${topColor}40`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 24, color: topColor,
-              }}>✦</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 22, marginBottom: 4 }}>
-                {profile?.dream_name || 'the wandering dreamer'}
+            {/* Profile card */}
+            <div className="card" style={{ padding: '28px 24px', marginBottom: 16, textAlign: 'center' }}>
+
+              {/* Avatar */}
+              <div style={{ position: 'relative', width: 72, height: 72, margin: '0 auto 16px' }}>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    width: 72, height: 72, borderRadius: '50%', cursor: 'pointer',
+                    background: avatarUrl ? 'transparent' : `${topColor}20`,
+                    border: `0.5px solid ${topColor}40`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    overflow: 'hidden', transition: 'border-color 0.2s', position: 'relative',
+                  }}
+                  onMouseEnter={e => {
+                    const overlay = (e.currentTarget as HTMLElement).querySelector('.avatar-overlay') as HTMLElement
+                    if (overlay) overlay.style.opacity = '1'
+                  }}
+                  onMouseLeave={e => {
+                    const overlay = (e.currentTarget as HTMLElement).querySelector('.avatar-overlay') as HTMLElement
+                    if (overlay) overlay.style.opacity = '0'
+                  }}
+                >
+                  {avatarUploading ? (
+                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '0.1em' }}>…</div>
+                  ) : avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontSize: 26, color: topColor }}>✦</span>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="avatar-overlay" style={{
+                    position: 'absolute', inset: 0, borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s',
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={e => { if (e.target.files?.[0]) uploadAvatar(e.target.files[0]) }}
+                />
               </div>
+
+              {/* Editable name */}
+              {editingName ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 8 }}>
+                  <input
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setEditingName(false) }}
+                    autoFocus
+                    maxLength={40}
+                    style={{
+                      background: 'var(--surface2)', border: '0.5px solid var(--accent)',
+                      borderRadius: 8, color: 'var(--text-primary)', padding: '6px 12px',
+                      fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 20,
+                      outline: 'none', textAlign: 'center', width: 220,
+                    }}
+                  />
+                  <button
+                    onClick={saveName}
+                    disabled={nameSaving}
+                    style={{
+                      background: 'var(--accent)', border: 'none', borderRadius: 8,
+                      color: 'white', padding: '6px 12px', cursor: 'pointer', fontSize: 13,
+                      opacity: nameSaving ? 0.5 : 1,
+                    }}
+                  >
+                    {nameSaving ? '…' : 'Save'}
+                  </button>
+                  <button
+                    onClick={() => setEditingName(false)}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => setEditingName(true)}
+                  title="Click to edit your name"
+                  style={{
+                    fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 22,
+                    marginBottom: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+                    gap: 8, color: 'var(--text-primary)',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget.querySelector('.edit-icon') as HTMLElement).style.opacity = '1' }}
+                  onMouseLeave={e => { (e.currentTarget.querySelector('.edit-icon') as HTMLElement).style.opacity = '0' }}
+                >
+                  {profile?.dream_name || 'the wandering dreamer'}
+                  <svg className="edit-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="var(--text-tertiary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ opacity: 0, transition: 'opacity 0.2s', flexShrink: 0 }}
+                  >
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </div>
+              )}
+
               <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{email}</div>
+              {!editingName && (
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6, opacity: 0.6 }}>
+                  click your name to edit · click avatar to change photo
+                </div>
+              )}
             </div>
 
+            {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
               {[
                 { val: String(profile?.dream_count || 0), label: 'Dreams' },
@@ -65,11 +219,14 @@ export default function ProfilePage() {
               ))}
             </div>
 
+            {/* Nav links */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
               {[
-                { href: '/journal', label: 'View your journal' },
-                { href: '/map',     label: 'Explore the atlas' },
-                { href: '/worlds',  label: 'Browse dreamworlds' },
+                { href: '/journal',      label: 'View your journal' },
+                { href: '/map',          label: 'Explore the atlas' },
+                { href: '/dreamworlds',  label: 'Browse dreamworlds' },
+                { href: '/twins',        label: 'Find your dream twin' },
+                { href: '/wrapped',      label: 'Your dream wrapped' },
               ].map(({ href, label }) => (
                 <Link key={href} href={href} style={{ textDecoration: 'none' }}>
                   <div className="card" style={{ padding: '14px 18px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -80,16 +237,9 @@ export default function ProfilePage() {
               ))}
             </div>
 
-            <div style={{ padding: '16px 20px', borderRadius: 12, border: '0.5px dashed var(--border)', marginBottom: 24 }}>
-              <div style={{ fontSize: 11, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 10 }}>COMING IN PHASE 2</div>
-              {['Dream Wrapped — your annual psyche map', 'Dream Twin — find your unconscious mirror', 'Privacy controls — full anonymous mode'].map(f => (
-                <div key={f} style={{ fontSize: 13, color: 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <span style={{ color: 'var(--accent)', fontSize: 10 }}>◌</span> {f}
-                </div>
-              ))}
-            </div>
-
-            <button onClick={signOut} className="btn-ghost" style={{ width: '100%', color: 'var(--text-tertiary)' }}>Sign out</button>
+            <button onClick={signOut} className="btn-ghost" style={{ width: '100%', color: 'var(--text-tertiary)' }}>
+              Sign out
+            </button>
           </>
         )}
       </div>
