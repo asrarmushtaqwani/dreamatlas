@@ -46,6 +46,10 @@ export default function ProfilePage() {
   }
 
   async function uploadAvatar(file: File) {
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image must be under 2MB')
+      return
+    }
     setAvatarUploading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
