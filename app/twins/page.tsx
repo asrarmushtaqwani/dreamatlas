@@ -64,11 +64,12 @@ export default function TwinsPage() {
       <div style={{ width: '100%', maxWidth: 480, textAlign: 'center', margin: '0 auto' }}>
 
         <Link href="/map" style={{
-          color: 'rgba(139,111,255,0.4)', fontSize: 12, letterSpacing: '0.2em',
-          textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 24,
-        }}>
-          ← Atlas
-        </Link>
+  color: 'rgba(139,111,255,0.4)', fontSize: 12, letterSpacing: '0.2em',
+  textTransform: 'uppercase', textDecoration: 'none', display: 'block', marginBottom: 24,
+  textAlign: 'left',
+}}>
+  ← Atlas
+</Link>
 
         <div style={{ color: 'rgba(139,111,255,0.4)', fontSize: 11, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 24, fontFamily: 'sans-serif' }}>
           Dream Twins
