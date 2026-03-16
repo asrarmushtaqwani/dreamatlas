@@ -16,11 +16,9 @@ export default function TwinsPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Check for existing twin match + dream count
     async function init() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-
       const [{ count }, { data: existing }] = await Promise.all([
         supabase.from('dreams').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase
@@ -31,12 +29,8 @@ export default function TwinsPage() {
           .limit(1)
           .single(),
       ])
-
       setMyDreamCount(count || 0)
-      if (existing) {
-        setTwin(existing as any)
-        setState('found')
-      }
+      if (existing) { setTwin(existing as any); setState('found') }
     }
     init()
   }, [])
@@ -47,11 +41,7 @@ export default function TwinsPage() {
     try {
       const res = await fetch('/api/twins', { method: 'POST' })
       const data = await res.json()
-      if (!res.ok) {
-        setError(data.error || 'Something went wrong')
-        setState('error')
-        return
-      }
+      if (!res.ok) { setError(data.error || 'Something went wrong'); setState('error'); return }
       setTwin(data)
       setReasoning(data.reasoning || '')
       setState('found')
@@ -62,184 +52,152 @@ export default function TwinsPage() {
   }
 
   const tooFewDreams = myDreamCount < 3
+  const accentColor = (twin as any)?.twin_profile?.avatar_color || '#8b6fff'
 
   return (
-    <div className="min-h-screen bg-[#070710] text-white font-['Crimson_Pro',_Georgia,_serif] flex flex-col items-center justify-center px-6 py-16">
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(139,111,255,0.05),transparent)]" />
-      </div>
+    <div style={{
+      minHeight: '100vh', background: '#070710', color: 'white',
+      fontFamily: "'Crimson Pro', Georgia, serif",
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      padding: '64px 24px',
+    }}>
+      <div style={{ width: '100%', maxWidth: 480, textAlign: 'center' }}>
 
-      <div className="relative w-full max-w-lg text-center">
-        <div className="text-[#8b6fff]/40 text-xs tracking-[0.4em] uppercase mb-6 font-sans">
+        <div style={{ color: 'rgba(139,111,255,0.4)', fontSize: 11, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 24, fontFamily: 'sans-serif' }}>
           Dream Twins
         </div>
 
-        <h1 className="text-4xl font-light tracking-tight mb-4">
+        <h1 style={{ fontSize: 36, fontWeight: 300, lineHeight: 1.2, margin: '0 0 16px' }}>
           Your unconscious<br />doppelgänger
         </h1>
 
-        <p className="text-white/30 mb-12 text-lg leading-relaxed">
-          Somewhere on earth, another mind dreams<br />
-          the same territories you do.
+        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 18, lineHeight: 1.6, margin: '0 0 48px' }}>
+          Somewhere on earth, another mind dreams<br />the same territories you do.
         </p>
 
-        {/* States */}
         {state === 'idle' && (
-          <div>
-            {tooFewDreams ? (
-              <div className="border border-white/[0.06] rounded-2xl p-8 bg-white/[0.02]">
-                <p className="text-white/40 text-sm mb-2">
-                  Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to find your twin.
-                </p>
-                <p className="text-white/20 text-xs">
-                  Your twin is found by comparing archetype fingerprints across all dreamers.
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={findTwin}
-                className="px-10 py-4 border border-[#8b6fff]/40 rounded-full text-[#8b6fff] hover:bg-[#8b6fff]/10 hover:border-[#8b6fff] transition-all duration-300 tracking-widest text-sm uppercase font-sans"
-              >
-                Find my twin
-              </button>
-            )}
-          </div>
+          tooFewDreams ? (
+            <div style={{ border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 28, background: 'rgba(255,255,255,0.02)' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, margin: '0 0 8px' }}>
+                Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to find your twin.
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13, margin: 0 }}>
+                Your twin is found by comparing archetype fingerprints across all dreamers.
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={findTwin}
+              style={{
+                padding: '14px 40px', border: '0.5px solid rgba(139,111,255,0.4)', borderRadius: 40,
+                color: '#8b6fff', background: 'transparent', cursor: 'pointer',
+                fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'sans-serif',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(139,111,255,0.1)'; (e.currentTarget as HTMLElement).style.borderColor = '#8b6fff' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(139,111,255,0.4)' }}
+            >
+              Find my twin
+            </button>
+          )
         )}
 
         {state === 'loading' && (
-          <div className="space-y-4">
-            <div className="flex justify-center gap-1">
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 16 }}>
               {[0,1,2].map(i => (
-                <div
-                  key={i}
-                  className="w-1.5 h-1.5 rounded-full bg-[#8b6fff]"
-                  style={{ animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite` }}
-                />
+                <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#8b6fff', animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite` }} />
               ))}
             </div>
-            <p className="text-white/30 text-sm tracking-widest animate-pulse">
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, letterSpacing: '0.2em' }}>
               scanning the collective unconscious…
             </p>
+            <style>{`@keyframes pulse { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }`}</style>
           </div>
         )}
 
         {state === 'error' && (
-          <div className="space-y-4">
-            <p className="text-white/40 italic">{error}</p>
-            <button
-              onClick={() => setState('idle')}
-              className="text-[#8b6fff]/60 text-sm hover:text-[#8b6fff] transition-colors underline underline-offset-4"
-            >
+          <div>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginBottom: 16 }}>{error}</p>
+            <button onClick={() => setState('idle')} style={{ color: 'rgba(139,111,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, textDecoration: 'underline' }}>
               Try again
             </button>
           </div>
         )}
 
         {state === 'found' && twin && (
-          <div className="space-y-6">
-            {/* Twin card */}
-            <div className="border border-white/10 rounded-2xl p-8 bg-white/[0.03] relative overflow-hidden">
-              {/* Glow */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `radial-gradient(circle at 50% 0%, ${twin.twin_profile?.avatar_color || '#8b6fff'}10, transparent 60%)`,
-                }}
-              />
-              <div className="relative">
-                {/* Avatar */}
-                <div className="flex justify-center mb-6">
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
-                    style={{
-                      backgroundColor: `${twin.twin_profile?.avatar_color || '#8b6fff'}20`,
-                      border: `1px solid ${twin.twin_profile?.avatar_color || '#8b6fff'}40`,
-                      boxShadow: `0 0 30px ${twin.twin_profile?.avatar_color || '#8b6fff'}20`,
-                    }}
-                  >
-                    🌙
-                  </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{
+              border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: 32,
+              background: 'rgba(255,255,255,0.02)', position: 'relative', overflow: 'hidden',
+            }}>
+              {/* Avatar */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                <div style={{
+                  width: 60, height: 60, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 24, backgroundColor: `${accentColor}20`,
+                  border: `1px solid ${accentColor}40`, boxShadow: `0 0 30px ${accentColor}20`,
+                }}>
+                  🌙
                 </div>
-
-                <p className="text-white/40 text-xs tracking-[0.3em] uppercase mb-1 font-sans">
-                  Your twin
-                </p>
-                <h2 className="text-2xl font-light mb-4">
-                  {twin.twin_profile?.dream_name || 'unknown dreamer'}
-                </h2>
-
-                {/* Similarity */}
-                <div className="mb-5">
-                  <div className="flex justify-between text-xs text-white/30 mb-2 font-sans">
-                    <span>Unconscious similarity</span>
-                    <span>{Math.round(twin.similarity_score * 100)}%</span>
-                  </div>
-                  <div className="h-px w-full bg-white/10 relative">
-                    <div
-                      className="absolute left-0 top-0 h-full transition-all duration-1000"
-                      style={{
-                        width: `${twin.similarity_score * 100}%`,
-                        backgroundColor: twin.twin_profile?.avatar_color || '#8b6fff',
-                        boxShadow: `0 0 8px ${twin.twin_profile?.avatar_color || '#8b6fff'}`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Shared archetypes */}
-                {twin.shared_archetypes?.length > 0 && (
-                  <div className="mb-5">
-                    <p className="text-white/30 text-xs tracking-wider uppercase mb-2 font-sans">
-                      Shared territories
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {twin.shared_archetypes.map(a => (
-                        <span
-                          key={a}
-                          className="px-3 py-1 rounded-full text-xs tracking-wider uppercase font-sans border"
-                          style={{
-                            color: ARCHETYPE_COLORS[a] || '#8b6fff',
-                            borderColor: `${ARCHETYPE_COLORS[a] || '#8b6fff'}40`,
-                            backgroundColor: `${ARCHETYPE_COLORS[a] || '#8b6fff'}10`,
-                          }}
-                        >
-                          {a}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Reasoning */}
-                {reasoning && (
-                  <p className="text-white/40 italic text-sm leading-relaxed border-t border-white/[0.06] pt-5 mt-5">
-                    "{reasoning}"
-                  </p>
-                )}
               </div>
+
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 4px', fontFamily: 'sans-serif' }}>
+                Your twin
+              </p>
+              <h2 style={{ fontSize: 24, fontWeight: 300, margin: '0 0 20px', color: 'white' }}>
+                {(twin as any).twin_profile?.dream_name || 'unknown dreamer'}
+              </h2>
+
+              {/* Similarity bar */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: 'sans-serif' }}>Unconscious similarity</span>
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: 'sans-serif' }}>{Math.round(twin.similarity_score * 100)}%</span>
+                </div>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', position: 'relative' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${twin.similarity_score * 100}%`, backgroundColor: accentColor, boxShadow: `0 0 8px ${accentColor}` }} />
+                </div>
+              </div>
+
+              {/* Shared archetypes */}
+              {twin.shared_archetypes?.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 10px', fontFamily: 'sans-serif' }}>
+                    Shared territories
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+                    {twin.shared_archetypes.map(a => (
+                      <span key={a} style={{
+                        padding: '4px 12px', borderRadius: 20, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'sans-serif',
+                        color: ARCHETYPE_COLORS[a] || '#8b6fff',
+                        border: `0.5px solid ${ARCHETYPE_COLORS[a] || '#8b6fff'}40`,
+                        background: `${ARCHETYPE_COLORS[a] || '#8b6fff'}10`,
+                      }}>
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reasoning */}
+              {reasoning && (
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, borderTop: '0.5px solid rgba(255,255,255,0.06)', paddingTop: 20, margin: 0 }}>
+                  "{reasoning}"
+                </p>
+              )}
             </div>
 
-            <p className="text-white/20 text-xs">
+            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>
               Twins are recalculated as new dreamers join.
             </p>
-
-            <button
-              onClick={findTwin}
-              className="text-[#8b6fff]/40 text-sm hover:text-[#8b6fff]/70 transition-colors underline underline-offset-4"
-            >
+            <button onClick={findTwin} style={{ color: 'rgba(139,111,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, textDecoration: 'underline' }}>
               Recalculate
             </button>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-          40% { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
     </div>
   )
 }
