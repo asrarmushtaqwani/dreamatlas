@@ -30,10 +30,10 @@ const NODES = [
   { x: 0.88, y: 0.78, a: 'Trickster',      s: 4 },
 ]
 
-// Accent: warm rose-pink like the Cobot image
-const ACCENT    = '#e879a0'
-const ACCENT_DIM = 'rgba(232,121,160,0.15)'
-const ACCENT_GLOW = 'rgba(232,121,160,0.08)'
+// Accent: light sky blue color
+const ACCENT     = '#7dd3fc'
+const ACCENT_DIM  = 'rgba(125,211,252,0.12)'
+const ACCENT_GLOW = 'rgba(125,211,252,0.06)''
 
 export default function LandingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
