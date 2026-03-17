@@ -33,7 +33,7 @@ const NODES = [
 // Accent: light sky blue color
 const ACCENT     = '#7dd3fc'
 const ACCENT_DIM  = 'rgba(125,211,252,0.12)'
-const ACCENT_GLOW = 'rgba(125,211,252,0.06)''
+const ACCENT_GLOW = 'rgba(125,211,252,0.06)'
 
 export default function LandingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
