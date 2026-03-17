@@ -59,7 +59,7 @@ export default function InsightPage() {
 
         {/* Essence */}
         <div style={t(2)}>
-          <div style={{ background: 'rgba(255,255,255,0.04)', border: `0.5px solid ${color}18`, borderRadius: 18, padding: '26px 24px', background: `linear-gradient(135deg, rgba(255,255,255,0.04), ${color}04)` as any }}>
+          <div style={{ border: `0.5px solid ${color}18`, borderRadius: 18, padding: '26px 24px', background: `linear-gradient(135deg, rgba(255,255,255,0.04), ${color}04)` }}>
             <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.25)', marginBottom: 12 }}>Essence</div>
             <p style={{ fontFamily: FONT_DISPLAY, fontSize: 20, fontStyle: 'italic', fontWeight: 700, lineHeight: 1.6, color: '#f0ece6', letterSpacing: '-0.01em' }}>
               {dream.essence}
