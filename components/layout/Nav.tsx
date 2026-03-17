@@ -149,13 +149,12 @@ export function Sidebar() {
 export function MobileNav() {
   const path = usePathname()
   const items = [
-    { href: '/map',         Icon: MapIcon,     label: 'Atlas' },
-    { href: '/dreamworlds', Icon: WorldsIcon,  label: 'Worlds' },
-    { href: '/log',         Icon: PlusIcon,    label: null, accent: true },
-    { href: '/twins',       Icon: TwinsIcon,   label: 'Twins' },
-    { href: '/wrapped',     Icon: WrappedIcon, label: 'Wrapped' },
-  ]
-
+  { href: '/map',         Icon: MapIcon,     label: 'Atlas' },
+  { href: '/dreamworlds', Icon: WorldsIcon,  label: 'Worlds' },
+  { href: '/log',         Icon: PlusIcon,    label: null, accent: true },
+  { href: '/twins',       Icon: TwinsIcon,   label: 'Twins' },
+  { href: '/profile',     Icon: UserIcon,    label: 'Profile' },
+]
   return (
     <nav style={{
       display: 'flex', position: 'fixed', bottom: 0, left: 0, right: 0,
