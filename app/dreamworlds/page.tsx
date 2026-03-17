@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Dreamworld, Dream } from '@/types'
@@ -7,110 +6,145 @@ import { ARCHETYPE_COLORS } from '@/lib/dreams'
 import Link from 'next/link'
 
 export default function DreamworldsPage() {
-  const [dreamworlds, setDreamworlds] = useState<Dreamworld[]>([])
-  const [selected, setSelected] = useState<Dreamworld | null>(null)
-  const [dreams, setDreams] = useState<Dream[]>([])
-  const [loading, setLoading] = useState(true)
+  const [worlds, setWorlds]         = useState<Dreamworld[]>([])
+  const [selected, setSelected]     = useState<Dreamworld | null>(null)
+  const [dreams, setDreams]         = useState<Dream[]>([])
+  const [loading, setLoading]       = useState(true)
   const [dreamsLoading, setDreamsLoading] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
-    supabase
-      .from('dreamworlds')
-      .select('*')
+    supabase.from('dreamworlds').select('*')
       .order('dream_count', { ascending: false })
-      .then(({ data }) => {
-        setDreamworlds(data || [])
-        setLoading(false)
-      })
+      .then(({ data }) => { setWorlds(data || []); setLoading(false) })
   }, [])
 
   async function openWorld(world: Dreamworld) {
-    setSelected(world)
-    setDreamsLoading(true)
+    setSelected(world); setDreamsLoading(true)
     const { data } = await supabase
-      .from('dreamworld_dreams')
-      .select('dream_id, dreams(*)')
+      .from('dreamworld_dreams').select('dream_id, dreams(*)')
       .eq('dreamworld_id', world.id)
-      .order('added_at', { ascending: false })
-      .limit(20)
+      .order('added_at', { ascending: false }).limit(20)
     setDreams((data || []).map((r: any) => r.dreams).filter(Boolean))
     setDreamsLoading(false)
   }
 
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh', background: '#070710',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{ color: 'rgba(139,111,255,0.5)', fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
-          opening the worlds…
-        </div>
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ color: 'var(--text-tertiary)', fontSize: 12, letterSpacing: '0.3em', fontFamily: 'var(--font-body)' }}>
+        opening the worlds…
       </div>
-    )
-  }
+    </div>
+  )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#070710', color: 'white', fontFamily: "'Crimson Pro', Georgia, serif" }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '64px 24px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-primary)', paddingBottom: 80 }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 56 }}>
-          <Link href="/map" style={{
-            color: 'rgba(139,111,255,0.4)', fontSize: 12, letterSpacing: '0.2em',
-            textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 24,
-          }}>
-            ← Atlas
-          </Link>
-          <h1 style={{ fontSize: 44, fontWeight: 300, letterSpacing: '-0.5px', margin: '0 0 8px' }}>
-            Dreamworlds
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 18, fontWeight: 300, margin: 0 }}>
-            Nine territories of the collective unconscious. Every dream finds its home.
-          </p>
-        </div>
+      {/* Header */}
+      <div style={{
+        padding: '28px 28px 24px',
+        borderBottom: '0.5px solid var(--border)',
+        background: 'var(--nav-bg)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        position: 'sticky', top: 0, zIndex: 10,
+      }}>
+        <Link href="/map" style={{
+          color: 'var(--text-tertiary)', fontSize: 11, letterSpacing: '0.1em',
+          textTransform: 'uppercase', textDecoration: 'none',
+          display: 'inline-block', marginBottom: 10, transition: 'color 0.2s',
+        }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'}
+        >
+          ← Atlas
+        </Link>
+        <h1 style={{
+          fontFamily: 'var(--font-display)', fontSize: 34, fontWeight: 500,
+          fontStyle: 'italic', letterSpacing: '-0.01em', marginBottom: 4,
+        }}>
+          Dreamworlds
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 14, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
+          Nine territories of the collective unconscious.
+        </p>
+      </div>
+
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 12 }}>
-          {dreamworlds.map((world) => {
-            const color = ARCHETYPE_COLORS[world.archetype] || '#8b6fff'
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 12 }}
+          className="stagger"
+        >
+          {worlds.map((world, i) => {
+            const color = ARCHETYPE_COLORS[world.archetype] || 'var(--accent)'
             const isSelected = selected?.id === world.id
             return (
               <button
                 key={world.id}
                 onClick={() => openWorld(world)}
+                className="card animate-fade-up"
                 style={{
-                  textAlign: 'left', padding: 28, borderRadius: 16,
-                  border: `0.5px solid ${isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)'}`,
-                  background: isSelected ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
-                  cursor: 'pointer', transition: 'all 0.2s', width: '100%',
+                  textAlign: 'left', padding: '24px 22px',
+                  cursor: 'pointer', border: `0.5px solid ${isSelected ? color + '30' : 'var(--border)'}`,
+                  background: isSelected ? `linear-gradient(135deg, var(--surface2), ${color}06)` : 'var(--surface)',
+                  width: '100%', position: 'relative', overflow: 'hidden',
+                  transition: 'all 0.25s',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
-                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = color + '25'
+                  el.style.background = `linear-gradient(135deg, var(--surface2), ${color}05)`
                 }}
                 onMouseLeave={e => {
                   if (!isSelected) {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)'
-                    ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
+                    const el = e.currentTarget as HTMLElement
+                    el.style.borderColor = 'var(--border)'
+                    el.style.background = 'var(--surface)'
                   }
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 6, backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
-                  <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'sans-serif' }}>
+                {/* Color accent top */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+                  background: `linear-gradient(90deg, transparent, ${color}60, transparent)`,
+                  opacity: isSelected ? 1 : 0, transition: 'opacity 0.25s',
+                }} />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: '50%', marginTop: 4,
+                    backgroundColor: color,
+                    boxShadow: `0 0 10px ${color}80`,
+                  }} />
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: 11, letterSpacing: '0.1em', fontFamily: 'var(--font-body)' }}>
                     {world.dream_count.toLocaleString()} dreams
                   </span>
                 </div>
-                <h2 style={{ fontSize: 22, fontWeight: 300, margin: '0 0 4px', color: 'white' }}>{world.title}</h2>
-                <div style={{ color, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'sans-serif', marginBottom: 10 }}>
+
+                <h2 style={{
+                  fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 500,
+                  fontStyle: 'italic', margin: '0 0 4px', color: 'var(--text-primary)',
+                }}>
+                  {world.title}
+                </h2>
+                <div style={{
+                  color, fontSize: 10, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', fontFamily: 'var(--font-body)',
+                  fontWeight: 500, marginBottom: 10,
+                }}>
                   {world.archetype}
                 </div>
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, lineHeight: 1.6, margin: '0 0 14px' }}>
+                <p style={{
+                  color: 'var(--text-secondary)', fontSize: 13,
+                  lineHeight: 1.6, marginBottom: 12,
+                  fontFamily: 'var(--font-serif)',
+                  display: '-webkit-box', WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
+                }}>
                   {world.description}
                 </p>
-                <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontStyle: 'italic' }}>
+                <div style={{ color: 'var(--text-tertiary)', fontSize: 11, fontStyle: 'italic', fontFamily: 'var(--font-serif)' }}>
                   {world.theme}
                 </div>
               </button>
@@ -120,46 +154,70 @@ export default function DreamworldsPage() {
 
         {/* Dream panel */}
         {selected && (
-          <div style={{ marginTop: 40, border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 32, background: 'rgba(255,255,255,0.02)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+          <div className="card animate-fade-up" style={{
+            marginTop: 24, padding: '28px 24px',
+            borderColor: `${ARCHETYPE_COLORS[selected.archetype] || 'var(--accent)'}20`,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
               <div>
-                <h3 style={{ fontSize: 24, fontWeight: 300, margin: '0 0 6px', color: 'white' }}>{selected.title}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.35)', margin: 0, fontSize: 15 }}>{selected.description}</p>
+                <h3 style={{
+                  fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 500,
+                  fontStyle: 'italic', marginBottom: 4,
+                }}>
+                  {selected.title}
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: 13, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
+                  {selected.description}
+                </p>
               </div>
-              <button onClick={() => setSelected(null)} style={{ color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: 4 }}>
+              <button onClick={() => setSelected(null)} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--text-tertiary)', fontSize: 22, lineHeight: 1,
+                padding: '0 4px', transition: 'color 0.2s', flexShrink: 0,
+              }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'}
+              >
                 ×
               </button>
             </div>
+
             {dreamsLoading ? (
-              <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, letterSpacing: '0.3em', textAlign: 'center', padding: '32px 0' }}>
+              <div style={{ color: 'var(--text-tertiary)', fontSize: 12, letterSpacing: '0.2em', textAlign: 'center', padding: '28px 0' }}>
                 summoning dreams…
               </div>
             ) : dreams.length === 0 ? (
-              <div style={{ color: 'rgba(255,255,255,0.2)', textAlign: 'center', padding: '32px 0', fontStyle: 'italic' }}>
+              <div style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '28px 0', fontStyle: 'italic', fontFamily: 'var(--font-serif)' }}>
                 No dreams have entered this world yet.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {dreams.map((dream) => (
-                  <div key={dream.id} style={{ padding: 18, borderRadius: 12, border: '0.5px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
-                    <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.6, margin: '0 0 10px' }}>
-                      {dream.text}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {dreams.map(dream => (
+                  <div key={dream.id} className="card" style={{ padding: '16px 18px' }}>
+                    <p style={{
+                      color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.65,
+                      marginBottom: 10, fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+                      display: '-webkit-box', WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
+                    }}>
+                      "{dream.text}"
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        {dream.archetypes.map((a) => (
-                          <span key={a} style={{ color: ARCHETYPE_COLORS[a] || '#8b6fff', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'sans-serif' }}>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {dream.archetypes.map(a => (
+                          <span key={a} style={{
+                            color: ARCHETYPE_COLORS[a] || 'var(--accent)',
+                            fontSize: 10, letterSpacing: '0.12em',
+                            textTransform: 'uppercase', fontFamily: 'var(--font-body)', fontWeight: 500,
+                          }}>
                             {a}
                           </span>
                         ))}
                       </div>
-                      <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
-                      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, fontStyle: 'italic', margin: 0 }}>
+                      <span style={{ color: 'var(--border-mid)' }}>·</span>
+                      <p style={{ color: 'var(--text-tertiary)', fontSize: 12, fontStyle: 'italic', margin: 0, flex: 1, fontFamily: 'var(--font-serif)' }}>
                         "{dream.essence}"
                       </p>
-                      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'sans-serif' }}>
-                        {dream.resonance_count} resonances
-                      </span>
                     </div>
                   </div>
                 ))}
