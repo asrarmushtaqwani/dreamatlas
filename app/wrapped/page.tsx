@@ -6,110 +6,19 @@ import { WrappedSnapshot } from '@/types'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
 import Link from 'next/link'
 
-type WrappedState = 'loading' | 'found' | 'generating' | 'none' | 'error' | 'gate'
+type WrappedState = 'loading' | 'found' | 'generating' | 'none' | 'error'
 
 function getMonthName(monthStr: string) {
   const [year, month] = monthStr.split('-')
   return new Date(Number(year), Number(month) - 1).toLocaleString('default', { month: 'long', year: 'numeric' })
 }
 
-// Beautiful Pro gate overlay
-function ProGate() {
-  return (
-    <div style={{
-      minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-primary)',
-      fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', padding: '64px 24px', position: 'relative',
-    }}>
-      {/* Gold ambient */}
-      <div style={{
-        position: 'fixed', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(212,175,98,0.05), transparent 70%)',
-      }} />
-
-      <div style={{ position: 'relative', maxWidth: 440, textAlign: 'center' }}>
-        {/* Blurred preview card */}
-        <div style={{
-          background: 'linear-gradient(135deg, var(--surface) 0%, rgba(212,175,98,0.06) 100%)',
-          border: '0.5px solid var(--border-gold)', borderRadius: 24, padding: 36,
-          filter: 'blur(4px)', opacity: 0.5, marginBottom: -200, pointerEvents: 'none',
-          userSelect: 'none',
-        }}>
-          <div style={{ fontSize: 11, color: 'var(--gold)', letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 20 }}>
-            Dream Wrapped · March 2026
-          </div>
-          <div style={{ fontSize: 64, fontFamily: 'var(--font-display)', fontWeight: 300, color: 'var(--gold)', marginBottom: 8 }}>7</div>
-          <div style={{ color: 'var(--text-tertiary)', marginBottom: 20 }}>dreams this month</div>
-          <div style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: 15, lineHeight: 1.6 }}>
-            "Your unconscious has been tracing the edges of transformation, circling the same luminous threshold..."
-          </div>
-        </div>
-
-        {/* Gate overlay */}
-        <div style={{
-          position: 'relative', zIndex: 10,
-          background: 'rgba(6,5,15,0.85)', backdropFilter: 'blur(16px)',
-          border: '0.5px solid var(--border-gold)', borderRadius: 20, padding: 36,
-          boxShadow: '0 0 60px rgba(212,175,98,0.08)',
-        }}>
-          <div className="pro-badge" style={{ marginBottom: 20, display: 'inline-flex' }}>✦ Pro Feature</div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 300,
-            fontStyle: 'italic', marginBottom: 12, lineHeight: 1.2,
-          }}>
-            Your monthly<br />dream portrait
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7, marginBottom: 28 }}>
-            Dream Wrapped distills your month into a poetic portrait — dominant archetypes, recurring symbols, your unconscious fingerprint. Unlock it with Pro.
-          </p>
-
-          <hr className="gold-rule" style={{ marginBottom: 24 }} />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <Link href="/pro" style={{ textDecoration: 'none' }}>
-              <button className="btn-gold" style={{ width: '100%', fontSize: 14 }}>
-                Unlock Pro — $5 lifetime
-              </button>
-            </Link>
-            <Link href="/map" style={{ textDecoration: 'none' }}>
-              <button className="btn-ghost" style={{ width: '100%', fontSize: 13 }}>
-                Back to atlas
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function WrappedPage() {
   const [state, setState] = useState<WrappedState>('loading')
   const [wrapped, setWrapped] = useState<WrappedSnapshot | null>(null)
   const [error, setError] = useState('')
-  const supabase = createClient()
 
-  useEffect(() => {
-    async function init() {
-      // Check Pro status first
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { setState('gate'); return }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_pro')
-        .eq('id', user.id)
-        .single()
-
-      if (!profile?.is_pro) {
-        setState('gate')
-        return
-      }
-
-      generate()
-    }
-    init()
-  }, [])
+  useEffect(() => { generate() }, [])
 
   async function generate() {
     setState('generating')
@@ -130,16 +39,16 @@ export default function WrappedPage() {
     }
   }
 
-  const accentColor = wrapped?.top_archetype ? ARCHETYPE_COLORS[wrapped.top_archetype] : 'var(--gold)'
-
-  if (state === 'gate') return <ProGate />
+  const accentColor = wrapped?.top_archetype
+    ? ARCHETYPE_COLORS[wrapped.top_archetype]
+    : 'var(--accent)'
 
   if (state === 'loading' || state === 'generating') {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {[0,1,2,3].map(i => (
-            <div key={i} style={{ width: 3, height: 28, borderRadius: 2, background: 'var(--gold)', animation: `wave 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+            <div key={i} style={{ width: 3, height: 28, borderRadius: 2, background: 'var(--accent)', animation: `wave 1.2s ease-in-out ${i * 0.15}s infinite` }} />
           ))}
         </div>
         <p style={{ color: 'var(--text-tertiary)', fontSize: 13, letterSpacing: '0.2em', fontFamily: 'var(--font-prose)' }}>
@@ -178,35 +87,44 @@ export default function WrappedPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-primary)', fontFamily: 'var(--font-body)', padding: '64px 24px' }}>
-      {/* Gold ambient */}
+      {/* Ambient */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none',
         background: `radial-gradient(ellipse 60% 40% at 50% 20%, ${accentColor}08, transparent)`,
       }} />
 
       <div style={{ position: 'relative', maxWidth: 440, margin: '0 auto' }}>
+
         <Link href="/journal" style={{ color: 'var(--text-tertiary)', fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 32 }}>
           ← Journal
         </Link>
 
         {/* Card */}
         <div style={{
-          borderRadius: 24, border: '0.5px solid var(--border-gold)', overflow: 'hidden',
-          background: `linear-gradient(135deg, var(--surface) 0%, var(--bg) 50%, ${accentColor}06 100%)`,
-          boxShadow: '0 0 60px rgba(212,175,98,0.06)',
-        }}
-          className="animate-glow"
-        >
+          borderRadius: 24,
+          border: `0.5px solid rgba(255,255,255,0.08)`,
+          overflow: 'hidden',
+          background: `linear-gradient(135deg, var(--surface) 0%, var(--bg) 60%, ${accentColor}06 100%)`,
+        }}>
           <div style={{ padding: 36 }}>
-            {/* Month */}
-            <div style={{ fontSize: 11, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 28, fontFamily: 'var(--font-body)', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>
+
+            {/* Month label */}
+            <div style={{
+              fontSize: 10, letterSpacing: '0.4em', textTransform: 'uppercase',
+              marginBottom: 28, fontFamily: 'var(--font-body)', color: accentColor,
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
               <span>✦</span>
               <span>Dream Wrapped · {getMonthName(wrapped.month)}</span>
             </div>
 
             {/* Big number */}
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 72, fontWeight: 300, lineHeight: 1, color: 'var(--gold)', marginBottom: 6, fontFamily: 'var(--font-display)' }}>
+              <div style={{
+                fontSize: 72, fontWeight: 300, lineHeight: 1,
+                color: accentColor, marginBottom: 6,
+                fontFamily: 'var(--font-display)',
+              }}>
                 {wrapped.dream_count}
               </div>
               <div style={{ color: 'var(--text-tertiary)', fontSize: 13, letterSpacing: '0.1em' }}>
@@ -238,9 +156,9 @@ export default function WrappedPage() {
                   {wrapped.top_symbols.map((sym, i) => (
                     <span key={sym} style={{
                       padding: '5px 14px', borderRadius: 20, fontSize: 13,
-                      border: '0.5px solid rgba(212,175,98,0.2)',
+                      border: '0.5px solid var(--border)',
                       color: `rgba(237,232,245,${0.7 - i * 0.08})`,
-                      background: 'rgba(212,175,98,0.04)',
+                      background: 'var(--surface2)',
                       fontFamily: 'var(--font-prose)',
                     }}>
                       {sym}
@@ -271,7 +189,7 @@ export default function WrappedPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {wrapped.dreamworld_titles.map(title => (
                     <div key={title} style={{ color: 'var(--text-secondary)', fontSize: 14, display: 'flex', gap: 10, alignItems: 'center', fontFamily: 'var(--font-prose)' }}>
-                      <span style={{ color: 'var(--gold)', fontSize: 10 }}>✦</span> {title}
+                      <span style={{ color: accentColor, fontSize: 10 }}>✦</span> {title}
                     </div>
                   ))}
                 </div>
@@ -280,35 +198,51 @@ export default function WrappedPage() {
 
             <hr className="gold-rule" style={{ marginBottom: 24 }} />
 
-            {/* Essence */}
+            {/* Essence summary */}
             {wrapped.essence_summary && (
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15, fontStyle: 'italic', lineHeight: 1.8, margin: '0 0 28px', fontFamily: 'var(--font-display)' }}>
+              <p style={{
+                color: 'var(--text-secondary)', fontSize: 15, fontStyle: 'italic',
+                lineHeight: 1.8, margin: '0 0 28px', fontFamily: 'var(--font-display)',
+              }}>
                 "{wrapped.essence_summary}"
               </p>
             )}
 
             {/* Footer */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-tertiary)', fontSize: 10, letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>DreamAtlas</span>
-              <span className="pro-badge" style={{ fontSize: 9 }}>✦ Pro</span>
+              <span style={{ color: 'var(--text-tertiary)', fontSize: 10, letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                DreamAtlas
+              </span>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {[0,1,2].map(i => (
+                  <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: accentColor, opacity: 0.3 + i * 0.2 }} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Links */}
+        {/* Bottom links */}
         <div style={{ marginTop: 28, textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-tertiary)', fontSize: 13, marginBottom: 16 }}>
+            This month in your unconscious.
+          </p>
           <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
               { href: '/journal', label: 'Journal' },
               { href: '/dreamworlds', label: 'Worlds' },
               { href: '/twins', label: 'Twins' },
             ].map(({ href, label }) => (
-              <Link key={href} href={href} style={{ color: 'var(--text-tertiary)', fontSize: 13, textDecoration: 'none', letterSpacing: '0.1em' }}>
+              <Link key={href} href={href} style={{ color: 'var(--text-tertiary)', fontSize: 13, textDecoration: 'none', letterSpacing: '0.05em', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'}
+              >
                 {label}
               </Link>
             ))}
           </div>
         </div>
+
       </div>
     </div>
   )
