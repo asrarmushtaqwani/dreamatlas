@@ -8,7 +8,14 @@ export function GlobalNav() {
   const path = usePathname()
   const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
   
   if (!mounted) return null
   if (path === '/' || path.startsWith('/auth') || path.startsWith('/insight')) return null
@@ -34,11 +41,14 @@ export function GlobalNav() {
       `}</style>
       <motion.nav 
         initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }}
-        className="glass-nav hide-scrollbar"
+        className="hide-scrollbar"
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 5vw', overflowX: 'hidden', gap: 16
+          padding: '16px 5vw', overflowX: 'hidden', gap: 16,
+          background: scrolled ? '#000000' : 'transparent',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+          transition: 'background 0.3s, border-color 0.3s',
         }}
       >
         <Link href="/map" style={{ textDecoration: 'none', flexShrink: 0 }}>

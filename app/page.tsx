@@ -136,8 +136,8 @@ export default function LandingPage() {
       }}>
         
         {/* 3D Background Canvas Layer */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-          <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
+          <Canvas camera={{ position: [0, 0, 6], fov: 45 }} eventSource={typeof document !== 'undefined' ? document.body : undefined}>
             <Environment preset="city" />
             <GlassHeroMesh />
             <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
