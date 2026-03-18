@@ -1,9 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import dynamic from 'next/dynamic'
-
-const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), { ssr: false })
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
 
 // ──── ANIMATION VARIANTS ───────────────────────────────────────────────────────
 const fadeInUp = {
@@ -24,6 +21,29 @@ export default function LandingPage() {
   const { scrollYProgress } = useScroll();
   const yHeroText = useTransform(scrollYProgress, [0, 1], [0, 300]);
   const opacityHeroText = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
+  // 3D Magnetic Lift Physics
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const isHovered = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 150 };
+  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [15, -15]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-500, 500], [-15, 15]), springConfig);
+  const translateZ = useSpring(useTransform(isHovered, [0, 1], [0, 80]), springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left - rect.width / 2);
+    mouseY.set(e.clientY - rect.top - rect.height / 2);
+  };
+  
+  const handleMouseEnter = () => isHovered.set(1);
+  const handleMouseLeave = () => {
+    isHovered.set(0);
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%', overflowX: 'hidden' }}>
@@ -86,28 +106,32 @@ export default function LandingPage() {
       <section style={{ 
         position: 'relative', height: '100vh', width: '100%', 
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        paddingTop: 80 
+        paddingTop: 80,
+        perspective: 1200 // enable 3D space
       }}>
-        
-        {/* 3D Background Canvas Layer - Dynamically loaded */}
-        <HeroCanvas />
 
         {/* Hero Content */}
         <motion.div 
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           style={{ 
             position: 'relative', zIndex: 10, textAlign: 'center', 
             y: yHeroText, opacity: opacityHeroText,
-            maxWidth: 1000, padding: '0 24px'
+            maxWidth: 1000, padding: '40px 24px',
+            rotateX, rotateY, z: translateZ,
+            transformStyle: "preserve-3d" // Pass 3D depth to children
           }}
         >
           <motion.div variants={fadeInUp} style={{
             display: 'inline-flex', padding: '8px 20px', borderRadius: 999,
             background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255,255,255,0.1)',
-            marginBottom: 40, alignItems: 'center', gap: 10
+            marginBottom: 40, alignItems: 'center', gap: 10,
+            transform: 'translateZ(30px)' // Pops out additional distance
           }}>
             <span style={{ width: 8, height: 8, background: '#fff', borderRadius: '50%', boxShadow: '0 0 10px #fff' }} />
             <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Open Source Intelligence</span>
@@ -116,10 +140,11 @@ export default function LandingPage() {
           <motion.h1 
             variants={fadeInUp}
             style={{ 
-              opacity: 0, pointerEvents: 'none', userSelect: 'none',
               fontFamily: 'var(--font-display)', fontWeight: 600,
               fontSize: 'clamp(56px, 9vw, 110px)', lineHeight: 0.95, letterSpacing: '-0.03em',
-              marginBottom: 32
+              marginBottom: 32,
+              transform: 'translateZ(60px)', // The core text pops out the furthest
+              textShadow: '0 20px 40px rgba(0,0,0,0.5)' // Gives it a grounded lift shadow
             }}
           >
             Map your unconscious.<br />
@@ -130,7 +155,8 @@ export default function LandingPage() {
             variants={fadeInUp}
             style={{
               fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-secondary)',
-              maxWidth: 580, margin: '0 auto 50px', lineHeight: 1.6, fontWeight: 400
+              maxWidth: 580, margin: '0 auto 50px', lineHeight: 1.6, fontWeight: 400,
+              transform: 'translateZ(40px)'
             }}
           >
             Log your dreams. Connect with the global collective. Built for dreamers who want deep Jungian analysis at the speed of thought.
