@@ -12,13 +12,12 @@ function GlassHeroMesh() {
     if (mesh.current) {
       mesh.current.rotation.x += delta * 0.15
       mesh.current.rotation.y += delta * 0.2
-      
       // True edge-to-edge interactive mouse follow
       const targetX = state.pointer.x * (viewport.width / 2)
       const targetY = state.pointer.y * (viewport.height / 2)
       
-      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, targetX, 0.12)
-      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.12)
+      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, targetX, 0.035)
+      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.035)
     }
   })
 
