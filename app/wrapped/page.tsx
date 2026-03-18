@@ -46,7 +46,7 @@ export default function WrappedPage() {
 
   if (state === 'none') return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
-      <p style={{ color: 'var(--text-secondary)', fontSize: 28, fontFamily: 'var(--font-display)', fontStyle: 'italic', marginBottom: 24 }}>No dreams logged this month.</p>
+      <p style={{ color: 'var(--text-secondary)', fontSize: 28, fontFamily: 'var(--font-display)', marginBottom: 24 }}>No dreams logged this month.</p>
       <Link href="/log" style={{ color: '#fff', fontSize: 15, textDecoration: 'underline', textUnderlineOffset: 4, fontWeight: 500 }}>Log your first dream</Link>
     </div>
   )
@@ -92,7 +92,7 @@ export default function WrappedPage() {
             {wrapped.top_archetype && (
               <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }} style={{ marginBottom: 28 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 8 }}>Dominant archetype</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, fontStyle: 'italic', color: isHex ? accent : '#fff', letterSpacing: '-0.01em' }}>{wrapped.top_archetype}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: isHex ? accent : '#fff', letterSpacing: '-0.01em' }}>{wrapped.top_archetype}</div>
               </motion.div>
             )}
 
@@ -124,7 +124,7 @@ export default function WrappedPage() {
             <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.1), transparent)', marginBottom: 32 }} />
 
             {wrapped.essence_summary && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.9 }} style={{ color: 'var(--text-secondary)', fontSize: 18, fontStyle: 'italic', lineHeight: 1.7, margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400 }}>"{wrapped.essence_summary}"</motion.p>
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.9 }} style={{ color: 'var(--text-secondary)', fontSize: 18, lineHeight: 1.7, margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400 }}>"{wrapped.essence_summary}"</motion.p>
             )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

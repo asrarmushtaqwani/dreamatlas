@@ -53,10 +53,10 @@ export default function DreamworldsPage() {
       {/* Header */}
       <div style={{ padding: '40px 5vw 0', zIndex: 10 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 44px)', fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.02em', marginBottom: 8, color: '#fff' }}>
-            <span className="text-gradient">Dream</span>worlds
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 44px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, color: '#fff' }}>
+            <span >Dream</span>worlds
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-display)', fontStyle: 'italic', margin: 0 }}>Nine territories of the collective unconscious.</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-display)', margin: 0 }}>Nine territories of the collective unconscious.</p>
         </div>
       </div>
 
@@ -83,12 +83,12 @@ export default function DreamworldsPage() {
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{world.dream_count.toLocaleString()} dreams</span>
                   </div>
                   
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, fontStyle: 'italic', margin: '0 0 8px', color: '#fff', letterSpacing: '-0.01em' }}>{world.title}</h2>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, margin: '0 0 8px', color: '#fff', letterSpacing: '-0.01em' }}>{world.title}</h2>
                   <div style={{ color, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 16 }}>{world.archetype}</div>
                   <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7, marginBottom: 12, fontFamily: 'var(--font-body)', display: '-webkit-box', WebkitLineClamp: isSelected ? undefined : 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
                     {world.description}
                   </p>
-                  <div style={{ color: 'var(--text-tertiary)', fontSize: 13, fontStyle: 'italic', fontFamily: 'var(--font-display)', fontWeight: 600 }}>{world.theme}</div>
+                  <div style={{ color: 'var(--text-tertiary)', fontSize: 13, fontFamily: 'var(--font-display)', fontWeight: 600 }}>{world.theme}</div>
                 </button>
 
                 <AnimatePresence>
@@ -98,16 +98,16 @@ export default function DreamworldsPage() {
                         {dreamsLoading ? (
                           <div style={{ color: 'var(--text-tertiary)', fontSize: 12, letterSpacing: '0.15em', textTransform: 'uppercase', textAlign: 'center', padding: '32px 0', fontWeight: 500 }}>Summoning collective dreams…</div>
                         ) : dreams.length === 0 ? (
-                          <div style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '32px 0', fontStyle: 'italic', fontFamily: 'var(--font-display)' }}>No dreams have entered this world yet.</div>
+                          <div style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '32px 0', fontFamily: 'var(--font-display)' }}>No dreams have entered this world yet.</div>
                         ) : (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 24 }}>
                             {dreams.map(dream => (
                               <div key={dream.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '18px 20px', backdropFilter: 'blur(5px)' }}>
-                                <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, marginBottom: 14, fontFamily: 'var(--font-display)', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>"{dream.text}"</p>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, marginBottom: 14, fontFamily: 'var(--font-display)', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>"{dream.text}"</p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                                   {dream.archetypes.map(a => <span key={a} style={{ color: ARCHETYPE_COLORS[a] || '#fff', fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 700 }}>{a}</span>)}
                                   <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
-                                  <p style={{ color: 'var(--text-tertiary)', fontSize: 13, fontStyle: 'italic', margin: 0, fontFamily: 'var(--font-display)', fontWeight: 500 }}>"{dream.essence}"</p>
+                                  <p style={{ color: 'var(--text-tertiary)', fontSize: 13, margin: 0, fontFamily: 'var(--font-display)', fontWeight: 500 }}>"{dream.essence}"</p>
                                 </div>
                               </div>
                             ))}

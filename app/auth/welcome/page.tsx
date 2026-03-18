@@ -98,7 +98,7 @@ export default function WelcomePage() {
       <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, width: '100%', height: '100%' }} />
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '24px', maxWidth: 520 }}>
         <div style={{ width: 80, height: 80, borderRadius: '50%', margin: '0 auto 32px', background: 'rgba(139,111,255,0.15)', border: '0.5px solid rgba(139,111,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, animation: 'orbPulse 3s ease-in-out infinite' }}>✦</div>
-        <div style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(36px, 8vw, 56px)', fontWeight: 300, fontStyle: 'italic', color: '#f0ecff', lineHeight: 1.2, marginBottom: 16, opacity: stage >= 1 ? 1 : 0, transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s ease' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 8vw, 56px)', fontWeight: 300, color: '#f0ecff', lineHeight: 1.2, marginBottom: 16, opacity: stage >= 1 ? 1 : 0, transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s ease' }}>
           You have entered<br /><span style={{ color: '#8b6fff' }}>the atlas</span>
         </div>
         <div style={{ fontSize: 16, color: 'rgba(138,130,168,1)', lineHeight: 1.7, marginBottom: 48, opacity: stage >= 2 ? 1 : 0, transform: stage >= 2 ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.8s ease' }}>
@@ -109,7 +109,7 @@ export default function WelcomePage() {
             <div key={a} style={{ padding: '5px 14px', borderRadius: 20, fontSize: 12, background: `${COLORS[i]}18`, border: `0.5px solid ${COLORS[i]}50`, color: COLORS[i] }}>{a}</div>
           ))}
         </div>
-        <button onClick={() => router.push('/log')} style={{ padding: '16px 48px', background: '#8b6fff', border: 'none', borderRadius: 14, color: 'white', fontFamily: 'Georgia, serif', fontSize: 20, fontStyle: 'italic', fontWeight: 300, cursor: 'pointer', opacity: stage >= 3 ? 1 : 0, transform: stage >= 3 ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.8s ease' }}>
+        <button onClick={() => router.push('/log')} style={{ padding: '16px 48px', background: '#8b6fff', border: 'none', borderRadius: 14, color: 'white', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 300, cursor: 'pointer', opacity: stage >= 3 ? 1 : 0, transform: stage >= 3 ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.8s ease' }}>
           log your first dream
         </button>
         <div style={{ marginTop: 20, fontSize: 13, color: 'rgba(74,68,104,1)', opacity: stage >= 3 ? 1 : 0, transition: 'opacity 0.8s ease 0.3s' }}>

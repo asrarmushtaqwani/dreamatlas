@@ -63,8 +63,8 @@ export default function TwinsPage() {
         
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 16 }}>Dream Twins</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16, color: '#fff' }}>
-            Your unconscious <span className="text-gradient">doppelgänger</span>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16, color: '#fff' }}>
+            Your unconscious <span >doppelgänger</span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 18, lineHeight: 1.6, fontFamily: 'var(--font-body)', fontWeight: 400 }}>
             Somewhere on earth, another mind dreams the exact same territories as you.
@@ -76,7 +76,7 @@ export default function TwinsPage() {
             <motion.div key="idle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.4 }}>
               {tooFew ? (
                 <div className="glass-card" style={{ padding: '32px', textAlign: 'center' }}>
-                   <p style={{ color: '#fff', fontSize: 18, marginBottom: 12, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 600 }}>Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to unlock your twin.</p>
+                   <p style={{ color: '#fff', fontSize: 18, marginBottom: 12, fontFamily: 'var(--font-display)', fontWeight: 600 }}>Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to unlock your twin.</p>
                    <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Twins are matched by comparing dense archetype fingerprints built over time.</p>
                 </div>
               ) : (
@@ -119,7 +119,7 @@ export default function TwinsPage() {
                 }}>🌙</div>
 
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 8 }}>Your Twin</div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, fontStyle: 'italic', marginBottom: 32, letterSpacing: '-0.01em', color: '#fff' }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, marginBottom: 32, letterSpacing: '-0.01em', color: '#fff' }}>
                   {(twin as any).twin_profile?.dream_name || 'unknown dreamer'}
                 </h2>
 
@@ -149,7 +149,7 @@ export default function TwinsPage() {
 
                 {reasoning && (
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, marginTop: 12 }}>
-                    <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: 16, lineHeight: 1.7, fontFamily: 'var(--font-display)', margin: 0 }}>"{reasoning}"</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 16, lineHeight: 1.7, fontFamily: 'var(--font-display)', margin: 0 }}>"{reasoning}"</p>
                   </div>
                 )}
               </div>

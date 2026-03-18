@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,20 +6,20 @@
 
 :root {
   /* Ultra-dark cinematic black */
-  --bg: #030305;
-  --surface: rgba(255, 255, 255, 0.02);
+  --bg: #000000;
+  --surface: rgba(255, 255, 255, 0.03);
   --surface-hover: rgba(255, 255, 255, 0.05);
   --border: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(255, 255, 255, 0.15);
+  --border-glow: rgba(0, 153, 255, 0.15);
 
-  --accent: #e2e2e2;
-  --accent-glow: rgba(255, 255, 255, 0.2);
+  --accent: #0099ff;
+  --accent-glow: rgba(0, 153, 255, 0.2);
 
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-tertiary: rgba(255, 255, 255, 0.3);
 
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Be Vietnam Pro', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
@@ -49,27 +49,27 @@ body {
 }
 
 .glass-nav {
-  background: rgba(3, 3, 5, 0.65);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  transform: translateY(-8px) scale(1.01);
-  border-color: rgba(255,255,255,0.25);
-  box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2);
-  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  background: var(--surface-hover);
 }
 
 /* Gradients */
@@ -99,41 +99,40 @@ body {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 16px 36px;
-  background: #ffffff;
-  color: #000000;
-  border-radius: 9999px;
+  background: var(--accent);
+  color: #ffffff;
+  border-radius: 12px;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.01em;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(0, 153, 255, 0.2);
 }
 .btn-premium:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 40px rgba(255,255,255,0.4);
+  background: #007bbd;
+  box-shadow: 0 6px 16px rgba(0, 153, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-glass {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.1);
   color: #fff;
-  padding: 16px 36px;
-  border-radius: 9999px;
+  border-radius: 12px;
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 15px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s;
   cursor: pointer;
 }
 .btn-glass:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.3);
-  transform: translateY(-2px);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
 }
 
 /* Responsive Utilities */

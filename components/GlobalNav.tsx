@@ -41,7 +41,7 @@ export function GlobalNav() {
         }}
       >
         <Link href="/map" style={{ textDecoration: 'none', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', fontStyle: 'italic' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', }}>
             Dream<span style={{ color: 'var(--accent)' }}>Atlas</span>
           </div>
         </Link>
@@ -89,7 +89,7 @@ export function GlobalNav() {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 60, height: 40 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', fontStyle: 'italic' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', }}>
                 Dream<span style={{ color: 'var(--accent)' }}>Atlas</span>
               </div>
               <button 
@@ -111,7 +111,7 @@ export function GlobalNav() {
                     style={{ textDecoration: 'none' }}
                   >
                     <span style={{ 
-                      fontFamily: 'var(--font-display)', fontSize: 32, fontStyle: 'italic', fontWeight: 700,
+                      fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700,
                       color: active ? '#fff' : 'var(--text-secondary)'
                     }}>
                       {item.label}

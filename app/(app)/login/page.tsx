@@ -97,12 +97,12 @@ function AuthShell({ heading, subheading, children, footer }: {
             </div>
             <h1 style={{
               fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 500,
-              fontStyle: 'italic', color: 'var(--text-primary)',
+              color: 'var(--text-primary)',
               marginBottom: 6, letterSpacing: '-0.01em',
             }}>
               {heading}
             </h1>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', fontFamily: 'var(--font-serif)', }}>
               {subheading}
             </p>
           </div>

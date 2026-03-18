@@ -85,8 +85,7 @@ export default function LandingPage() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: 'none' }}>
           <div style={{
-            fontFamily: 'var(--font-display)', fontSize: 22, fontStyle: 'italic',
-            fontWeight: 700, color: '#fff', letterSpacing: '-0.02em',
+            fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em',
             display: 'flex', alignItems: 'center', gap: 10
           }}>
             <div style={{
@@ -165,13 +164,13 @@ export default function LandingPage() {
           <motion.h1 
             variants={fadeInUp}
             style={{ 
-              fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 600,
-              fontSize: 'clamp(56px, 9vw, 130px)', lineHeight: 0.95, letterSpacing: '-0.03em',
+              fontFamily: 'var(--font-display)', fontWeight: 600,
+              fontSize: 'clamp(56px, 9vw, 110px)', lineHeight: 0.95, letterSpacing: '-0.03em',
               marginBottom: 32
             }}
           >
-            The world is <span className="text-gradient">dreaming.</span><br />
-            Now you can see it.
+            Map your unconscious.<br />
+            In absolute seconds.
           </motion.h1>
 
           <motion.p 
@@ -181,9 +180,7 @@ export default function LandingPage() {
               maxWidth: 580, margin: '0 auto 50px', lineHeight: 1.6, fontWeight: 400
             }}
           >
-            Log your dreams each morning. Artificial intelligence reveals the archetypes
-            and symbols hidden inside. Watch your unconscious appear on a living map
-            shared by thousands of dreamers globally.
+            Log your dreams. Connect with the global collective. Built for dreamers who want deep Jungian analysis at the speed of thought.
           </motion.p>
 
           <motion.div variants={fadeInUp} style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -211,10 +208,10 @@ export default function LandingPage() {
             transition={{ duration: 0.8 }}
             style={{ 
               fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 64px)', 
-              fontStyle: 'italic', letterSpacing: '-0.02em', marginBottom: 24
+              letterSpacing: '-0.02em', marginBottom: 24
             }}
           >
-            Your unconscious,<br />finally visible.
+            Deep psychoanalysis.<br />Instant cartography.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -255,7 +252,7 @@ export default function LandingPage() {
                 {feature.tag}
               </div>
               <h3 style={{ 
-                fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 24, 
+                fontFamily: 'var(--font-display)', fontSize: 24, 
                 marginBottom: 16, letterSpacing: '-0.01em' 
               }}>
                 {feature.title}
@@ -318,7 +315,7 @@ export default function LandingPage() {
         display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 24,
         background: 'rgba(3,3,5,0.8)', backdropFilter: 'blur(20px)'
       }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, fontWeight: 600 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600 }}>
           DreamAtlas
         </div>
         <div style={{ display: 'flex', gap: 32, fontSize: 14, color: 'var(--text-secondary)' }}>

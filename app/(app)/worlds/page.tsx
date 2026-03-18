@@ -82,12 +82,12 @@ export default function WorldsPage() {
           <button onClick={() => setEntered(null)} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: 13 }}>← worlds</button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 9, height: 9, borderRadius: '50%', background: col }} />
-            <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 20, color: 'var(--text-primary)' }}>{entered}</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--text-primary)' }}>{entered}</span>
           </div>
         </div>
         <div style={{ padding: '24px 24px 0' }}>
           <div style={{ background: `${col}10`, border: `0.5px solid ${col}30`, borderRadius: 14, padding: '18px 22px', marginBottom: 24 }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{world.description}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{world.description}</div>
             <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-tertiary)' }}>{count} dream{count !== 1 ? 's' : ''} · {world.tagline}</div>
           </div>
           <div style={{ fontSize: 11, letterSpacing: '2px', color: 'var(--text-tertiary)', marginBottom: 14 }}>DREAMS IN THIS WORLD</div>
@@ -96,15 +96,15 @@ export default function WorldsPage() {
           )}
           {!loadingDreams && worldDreams.length === 0 && (
             <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 8 }}>This world is quiet</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 8 }}>This world is quiet</div>
               <div style={{ fontSize: 14, color: 'var(--text-tertiary)', marginBottom: 24 }}>Be the first to dream here</div>
-              <Link href="/log"><button style={{ padding: '12px 28px', background: col, border: 'none', borderRadius: 12, color: 'white', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 16, cursor: 'pointer' }}>Log a dream</button></Link>
+              <Link href="/log"><button style={{ padding: '12px 28px', background: col, border: 'none', borderRadius: 12, color: 'white', fontFamily: 'var(--font-display)', fontSize: 16, cursor: 'pointer' }}>Log a dream</button></Link>
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {worldDreams.map((dream) => (
               <div key={dream.id} className="card" style={{ padding: '16px 18px' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: dream.essence ? 10 : 0 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: dream.essence ? 10 : 0 }}>
                   "{dream.text?.slice(0, 160)}{(dream.text?.length || 0) > 160 ? '...' : ''}"
                 </div>
                 {dream.essence && (
@@ -125,7 +125,7 @@ export default function WorldsPage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 100 }}>
       <div style={{ padding: '28px 24px 20px', borderBottom: '0.5px solid var(--border)' }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontStyle: 'italic', fontWeight: 300, marginBottom: 4 }}>Dreamworlds</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 300, marginBottom: 4 }}>Dreamworlds</div>
         <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{totalDreams} dreams across {Object.keys(counts).length} archetypes</div>
       </div>
       <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>

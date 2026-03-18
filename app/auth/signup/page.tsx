@@ -55,7 +55,7 @@ export default function SignupPage() {
                 fontSize: 12, color: '#000', fontWeight: 700 
               }}>✦</div>
             </div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, fontStyle: 'italic', marginBottom: 8, letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.02em' }}>
               Begin your atlas
             </h1>
             <p style={{ fontSize: 15, color: 'var(--text-secondary)' }}>Your dreams are waiting to be mapped.</p>

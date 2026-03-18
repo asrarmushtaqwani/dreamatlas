@@ -48,7 +48,7 @@ export default function InsightPage() {
                 border: `1px solid ${color}60`, backdropFilter: 'blur(10px)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32,
               }}>✦</motion.div>
-              <h2 style={{ fontSize: 22, color: '#fff', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 600, letterSpacing: '-0.01em', marginBottom: 8 }}>
+              <h2 style={{ fontSize: 22, color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 600, letterSpacing: '-0.01em', marginBottom: 8 }}>
                 The <span style={{ color }}>atlas</span> recognizes your dream.
               </h2>
             </motion.div>
@@ -60,7 +60,7 @@ export default function InsightPage() {
           {stage >= 2 && (
             <motion.div initial="hidden" animate="visible" variants={itemVariants} className="glass-card" style={{ padding: '32px 28px', border: `1px solid ${color}30`, background: `linear-gradient(145deg, rgba(255,255,255,0.05), ${color}05)` }}>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 16 }}>Core Essence</div>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontStyle: 'italic', fontWeight: 700, lineHeight: 1.6, color: '#fff', letterSpacing: '-0.01em' }}>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, lineHeight: 1.6, color: '#fff', letterSpacing: '-0.01em' }}>
                 "{dream.essence}"
               </p>
             </motion.div>

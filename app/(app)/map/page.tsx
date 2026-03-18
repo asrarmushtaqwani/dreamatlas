@@ -138,7 +138,7 @@ export default function MapPage() {
         borderBottom: '0.5px solid var(--border)',
         alignItems: 'center', justifyContent: 'space-between',
       }} className="mobile-header">
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontStyle: 'italic' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, }}>
           Dream<span style={{ color: 'var(--accent)' }}>Atlas</span>
         </div>
         <div style={{
@@ -187,7 +187,7 @@ export default function MapPage() {
                   <div style={{ fontSize: 10, letterSpacing: '1px', color: ARCHETYPE_COLORS[hoveredNode.node.archetype] || 'var(--accent)', marginBottom: 4 }}>
                     {hoveredNode.node.archetype.toUpperCase()}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
                     "{hoveredNode.node.text}"
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function MapPage() {
         }} className="map-panel">
 
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontStyle: 'italic', marginBottom: 4 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, marginBottom: 4 }}>
               collective atlas
             </div>
             <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>

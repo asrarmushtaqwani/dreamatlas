@@ -54,8 +54,8 @@ export default function JournalPage() {
       <div style={{ padding: '40px 5vw 0', zIndex: 50 }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 16 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontStyle: 'italic', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-              Your <span className="text-gradient">journal</span>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+              Your <span >journal</span>
             </h1>
             {!loading && dreams.length > 0 && (
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{dreams.length} dream{dreams.length !== 1 ? 's' : ''}</span>
@@ -87,7 +87,7 @@ export default function JournalPage() {
         {!loading && dreams.length === 0 && (
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', padding: '100px 24px' }}>
             <div style={{ width: 64, height: 64, borderRadius: '50%', margin: '0 auto 24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, boxShadow: '0 0 30px rgba(255,255,255,0.05)' }}>✦</div>
-            <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 28, marginBottom: 12, color: 'var(--text-secondary)' }}>No dreams mapped yet</p>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: 28, marginBottom: 12, color: 'var(--text-secondary)' }}>No dreams mapped yet</p>
             <p style={{ fontSize: 16, color: 'var(--text-tertiary)', marginBottom: 32 }}>Your journal awaits its first unconscious entry.</p>
             <Link href="/log" style={{ textDecoration: 'none' }}><button className="btn-premium">Log your first dream</button></Link>
           </motion.div>
@@ -127,7 +127,7 @@ export default function JournalPage() {
                 </div>
 
                 <motion.div animate={{ height: isOpen ? 'auto' : '65px' }} style={{ overflow: 'hidden' }}>
-                  <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 20, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     "{dream.text}"
                   </p>
                 </motion.div>

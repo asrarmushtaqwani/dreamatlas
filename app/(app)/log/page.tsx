@@ -79,10 +79,10 @@ export default function LogPage() {
           onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
         >← return to atlas</Link>
 
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(42px, 6vw, 64px)', fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 12 }}>
-          What did you <span className="text-gradient">dream?</span>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(42px, 6vw, 64px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 12 }}>
+          What did you <span >dream?</span>
         </h1>
-        <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 40 }}>
+        <p style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 40 }}>
           Fragments are fine. Write down the imagery that lingers.
         </p>
 
@@ -91,7 +91,7 @@ export default function LogPage() {
           <textarea 
             style={{
               width: '100%', background: 'transparent', border: 'none', color: 'var(--text-primary)',
-              fontFamily: 'var(--font-display)', fontSize: 22, fontStyle: 'italic', padding: '36px',
+              fontFamily: 'var(--font-display)', fontSize: 22, padding: '36px',
               resize: 'none', outline: 'none', lineHeight: 1.6
             }}
             value={text} onChange={e => setText(e.target.value)}

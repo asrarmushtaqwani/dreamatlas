@@ -83,7 +83,7 @@ export default function ProfilePage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 80, background: '#0f0e0d' }}>
       <div style={{ padding: '24px 24px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.07)', background: 'rgba(15,14,13,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
-        <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 30, fontStyle: 'italic', fontWeight: 700, color: '#f0ece6', letterSpacing: '-0.02em' }}>Profile</h1>
+        <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 30, fontWeight: 700, color: '#f0ece6', letterSpacing: '-0.02em' }}>Profile</h1>
       </div>
 
       <div style={{ padding: '24px', maxWidth: 520 }}>
@@ -115,12 +115,12 @@ export default function ProfilePage() {
               {editingName ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 8 }}>
                   <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setEditingName(false) }} autoFocus maxLength={40}
-                    style={{ background: 'rgba(255,255,255,0.06)', border: `0.5px solid ${ACCENT}40`, borderRadius: 8, color: '#f0ece6', padding: '7px 14px', fontFamily: FONT_DISPLAY, fontStyle: 'italic', fontWeight: 700, fontSize: 20, outline: 'none', textAlign: 'center', width: 220 }} />
+                    style={{ background: 'rgba(255,255,255,0.06)', border: `0.5px solid ${ACCENT}40`, borderRadius: 8, color: '#f0ece6', padding: '7px 14px', fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 20, outline: 'none', textAlign: 'center', width: 220 }} />
                   <button onClick={saveName} disabled={nameSaving} style={{ background: ACCENT, border: 'none', borderRadius: 8, color: '#0f0e0d', padding: '7px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: nameSaving ? 0.5 : 1 }}>{nameSaving ? '…' : 'Save'}</button>
                   <button onClick={() => setEditingName(false)} style={{ background: 'none', border: 'none', color: 'rgba(240,236,230,0.3)', cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: 4 }}>×</button>
                 </div>
               ) : (
-                <div onClick={() => setEditingName(true)} title="Click to edit" style={{ fontFamily: FONT_DISPLAY, fontStyle: 'italic', fontWeight: 700, fontSize: 22, marginBottom: 6, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, color: '#f0ece6', letterSpacing: '-0.01em', transition: 'opacity 0.2s' }}
+                <div onClick={() => setEditingName(true)} title="Click to edit" style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 22, marginBottom: 6, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, color: '#f0ece6', letterSpacing: '-0.01em', transition: 'opacity 0.2s' }}
                   onMouseEnter={e => { const ic = (e.currentTarget as HTMLElement).querySelector('.edit-ic') as HTMLElement; if (ic) ic.style.opacity = '1' }}
                   onMouseLeave={e => { const ic = (e.currentTarget as HTMLElement).querySelector('.edit-ic') as HTMLElement; if (ic) ic.style.opacity = '0' }}
                 >
