@@ -1,19 +1,24 @@
 'use client'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MeshTransmissionMaterial, Float, Environment, ContactShadows, Preload } from '@react-three/drei'
 import { useRef } from 'react'
 import * as THREE from 'three'
 
 function GlassHeroMesh() {
   const mesh = useRef<THREE.Mesh>(null)
+  const { viewport } = useThree()
   
   useFrame((state, delta) => {
     if (mesh.current) {
       mesh.current.rotation.x += delta * 0.15
       mesh.current.rotation.y += delta * 0.2
-      // Interactive mouse follow (parallax physics)
-      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, state.pointer.x * 2.5, 0.05)
-      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, state.pointer.y * 2.5, 0.05)
+      
+      // True edge-to-edge interactive mouse follow
+      const targetX = state.pointer.x * (viewport.width / 2)
+      const targetY = state.pointer.y * (viewport.height / 2)
+      
+      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, targetX, 0.12)
+      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.12)
     }
   })
 
@@ -49,8 +54,8 @@ function GlassHeroMesh() {
 
 export default function HeroCanvas() {
   return (
-    <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }} eventSource={typeof document !== 'undefined' ? document.body : undefined}>
+    <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 6], fov: 45 }} eventSource={typeof document !== 'undefined' ? document.body : undefined}>
         <Environment preset="city" />
         <GlassHeroMesh />
         <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
