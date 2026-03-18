@@ -40,7 +40,6 @@ function GlassHeroScene() {
         lineHeight={0.95}
         letterSpacing={-0.03}
         fontWeight={700}
-        font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
       >
         Map your unconscious.{"\n"}In absolute seconds.
       </Text>
@@ -81,7 +80,6 @@ export default function HeroCanvas() {
         <Environment preset="city" />
         <GlassHeroScene />
         <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
-        <Preload all />
       </Canvas>
     </div>
   )
