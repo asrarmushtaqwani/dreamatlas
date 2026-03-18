@@ -147,8 +147,8 @@ export default function LandingPage() {
               textShadow: '0 20px 40px rgba(0,0,0,0.5)' // Gives it a grounded lift shadow
             }}
           >
-            Map your unconscious.<br />
-            In absolute seconds.
+            Map your unconscious<br />
+            in absolute seconds.
           </motion.h1>
 
           <motion.p 
@@ -319,4 +319,4 @@ export default function LandingPage() {
 
     </div>
   )
-}
+}// trigger reload

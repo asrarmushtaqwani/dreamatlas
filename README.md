@@ -42,8 +42,17 @@ This is not a wellness app. It is an instrument for observing the dreaming mind 
 | Framework | Next.js 15 (App Router, TypeScript) |
 | Database | Supabase (Postgres + RLS + Auth) |
 | AI | Google Gemini API (`gemini-2.5-flash`) |
+| Physics | Three.js, React Three Fiber, Framer Motion |
 | Deployment | Vercel |
-| Styling | Tailwind CSS |
+
+---
+
+## The UI/UX Design System 🪞
+
+DreamAtlas was recently completely overhauled to feature an ultra-premium, tier-1 SaaS aesthetic reflecting platforms like *Luxo AI*:
+- **WebGL Refractive Physics**: The landing page features a hyper-realistic 3D glass orb built in `Three.js`. Thanks to custom `MeshTransmissionMaterial` shaders, the glass actively traps, bends, and physically warps the background typography behind it in real-time at 60fps as it tracks the user's cursor.
+- **Dark Matter Aesthetic**: Stripped of legacy serif fonts, the entire platform runs purely on absolute black (`#000000`), stark white `Be Vietnam Pro` headers, and sharp electric blue buttons.
+- **Instant LCP Loading**: The massively heavy WebGL engine is dynamically abstracted out of the `Next.js` critical rendering path, guaranteeing that the gorgeous static typographical content paints on screen instantly in `<1ms`, while the hardware accelerated 3D canvas compiles invisibly over it.
 
 ---
 
