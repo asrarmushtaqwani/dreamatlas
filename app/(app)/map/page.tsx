@@ -1,8 +1,11 @@
 'use client'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
 import { MapNode, Archetype } from '@/types'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, Html, Stars } from '@react-three/drei'
+import * as THREE from 'three'
 
 const ARCHETYPES = Object.keys(ARCHETYPE_COLORS) as Archetype[]
 
@@ -29,22 +32,81 @@ const FALLBACK_NODES: MapNode[] = [
   { id:'20', text:'Falling toward a second sun...', archetype:'Transcendence', map_x:0.5, map_y:0.15 },
 ]
 
-interface TooltipState {
-  node: MapNode
-  x: number
-  y: number
+function DreamGalaxy({ nodes, filter, setHoveredNode }: { nodes: MapNode[], filter: string, setHoveredNode: (hit: {node: MapNode, x: number, y: number, z: number} | null) => void }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null)
+  
+  const visibleNodes = useMemo(() => {
+    return filter === 'all' ? nodes : nodes.filter(n => n.archetype === filter)
+  }, [nodes, filter])
+
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const colorObj = useMemo(() => new THREE.Color(), [])
+  
+  const [positions, colors] = useMemo(() => {
+    const pos = new Float32Array(visibleNodes.length * 3)
+    const cols = new Float32Array(visibleNodes.length * 3)
+    
+    visibleNodes.forEach((n, i) => {
+      const radius = 60
+      const x = (n.map_x - 0.5) * radius
+      const y = -(n.map_y - 0.5) * radius // invert Y
+      
+      const numId = parseInt((n.id || "0").replace(/\D/g, '') || '0') % 100
+      const z = (Math.sin(numId * 123.456) * radius * 0.5)
+
+      pos[i * 3] = x
+      pos[i * 3 + 1] = y
+      pos[i * 3 + 2] = z
+      
+      const c = ARCHETYPE_COLORS[n.archetype] || '#8b6fff'
+      colorObj.set(c)
+      // bump up luminosity to make them glow like stars
+      cols[i * 3] = Math.min(1, colorObj.r * 1.5)
+      cols[i * 3 + 1] = Math.min(1, colorObj.g * 1.5)
+      cols[i * 3 + 2] = Math.min(1, colorObj.b * 1.5)
+    })
+    return [pos, cols]
+  }, [visibleNodes, colorObj])
+
+  useEffect(() => {
+    if (meshRef.current) {
+      for (let i = 0; i < visibleNodes.length; i++) {
+        dummy.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2])
+        dummy.updateMatrix()
+        meshRef.current.setMatrixAt(i, dummy.matrix)
+        meshRef.current.setColorAt(i, new THREE.Color(colors[i * 3], colors[i * 3 + 1], colors[i * 3 + 2]))
+      }
+      meshRef.current.instanceMatrix.needsUpdate = true
+      if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true
+    }
+  }, [visibleNodes, positions, colors, dummy])
+
+  return (
+    <instancedMesh 
+      ref={meshRef} 
+      args={[undefined, undefined, visibleNodes.length]} 
+      onPointerMove={(e) => {
+        if (e.instanceId !== undefined) {
+          e.stopPropagation()
+          const hit = visibleNodes[e.instanceId]
+          setHoveredNode({ node: hit, x: e.point.x, y: e.point.y, z: e.point.z })
+        }
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation()
+        setHoveredNode(null)
+      }}
+    >
+      <sphereGeometry args={[0.4, 16, 16]} />
+      <meshBasicMaterial toneMapped={false} />
+    </instancedMesh>
+  )
 }
 
 export default function MapPage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const nodesRef = useRef<(MapNode & { px: number; py: number })[]>([])
-  const animFrameRef = useRef<number>(0)
-  const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number; alpha: number; col: string }[]>([])
-
   const [nodes, setNodes] = useState<MapNode[]>(FALLBACK_NODES)
   const [filter, setFilter] = useState<string>('all')
-  const [tooltip, setTooltip] = useState<TooltipState | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<{node: MapNode, x: number, y: number, z: number} | null>(null)
   const [liveCount, setLiveCount] = useState(2847)
 
   // Fetch real dreams
@@ -59,132 +121,13 @@ export default function MapPage() {
             archetype: d.archetypes?.[0] || 'Voyage',
             map_x: d.map_x,
             map_y: d.map_y,
+            is_own: d.is_own,
           })))
           setLiveCount(data.length)
         }
       })
       .catch(() => {})
   }, [])
-
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current
-    const container = containerRef.current
-    if (!canvas || !container) return
-
-    canvas.width = container.offsetWidth
-    canvas.height = container.offsetHeight
-    const W = canvas.width, H = canvas.height
-    const ctx = canvas.getContext('2d')!
-
-    ctx.fillStyle = '#080711'
-    ctx.fillRect(0, 0, W, H)
-
-    // Subtle center glow
-    const cg = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.min(W, H) * 0.6)
-    cg.addColorStop(0, 'rgba(139,111,255,0.04)')
-    cg.addColorStop(1, 'rgba(0,0,0,0)')
-    ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H)
-
-    // Grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.02)'
-    ctx.lineWidth = 0.5
-    ctx.setLineDash([2, 8])
-    for (let i = 1; i < 4; i++) {
-      ctx.beginPath(); ctx.moveTo(W * i / 4, 0); ctx.lineTo(W * i / 4, H); ctx.stroke()
-      ctx.beginPath(); ctx.moveTo(0, H * i / 4); ctx.lineTo(W, H * i / 4); ctx.stroke()
-    }
-    ctx.setLineDash([])
-
-    const visible = filter === 'all' ? nodes : nodes.filter(n => n.archetype === filter)
-    const mapped = visible.map(n => ({ ...n, px: n.map_x * W, py: n.map_y * H }))
-    nodesRef.current = mapped
-
-    // Connection lines
-    mapped.forEach((n, i) => {
-      mapped.slice(i + 1).forEach(n2 => {
-        if (n.archetype !== n2.archetype) return
-        const dist = Math.hypot(n2.px - n.px, n2.py - n.py)
-        if (dist > W * 0.25) return
-        ctx.globalAlpha = 0.08 * (1 - dist / (W * 0.25))
-        ctx.strokeStyle = ARCHETYPE_COLORS[n.archetype] || '#8b6fff'
-        ctx.lineWidth = 0.5
-        ctx.beginPath(); ctx.moveTo(n.px, n.py); ctx.lineTo(n2.px, n2.py); ctx.stroke()
-        ctx.globalAlpha = 1
-      })
-    })
-
-    // Nodes
-    mapped.forEach(n => {
-      const col = ARCHETYPE_COLORS[n.archetype] || '#8b6fff'
-      const r = n.is_own ? 7 : 5
-
-      // Glow halo
-      const gd = ctx.createRadialGradient(n.px, n.py, 0, n.px, n.py, r * 5)
-      gd.addColorStop(0, col + '30')
-      gd.addColorStop(1, col + '00')
-      ctx.fillStyle = gd
-      ctx.beginPath(); ctx.arc(n.px, n.py, r * 5, 0, Math.PI * 2); ctx.fill()
-
-      // Core
-      ctx.beginPath(); ctx.arc(n.px, n.py, r, 0, Math.PI * 2)
-      ctx.fillStyle = col; ctx.fill()
-
-      if (n.is_own) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)'
-        ctx.lineWidth = 1
-        ctx.beginPath(); ctx.arc(n.px, n.py, r + 3, 0, Math.PI * 2); ctx.stroke()
-      }
-    })
-
-    // Floating particles
-    particlesRef.current = particlesRef.current.filter(p => p.alpha > 0)
-    particlesRef.current.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.alpha -= 0.008
-      ctx.globalAlpha = p.alpha
-      ctx.fillStyle = p.col
-      ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fill()
-      ctx.globalAlpha = 1
-    })
-    if (Math.random() < 0.15 && mapped.length > 0) {
-      const n = mapped[Math.floor(Math.random() * mapped.length)]
-      const col = ARCHETYPE_COLORS[n.archetype] || '#8b6fff'
-      particlesRef.current.push({
-        x: n.px, y: n.py,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        alpha: 0.6, col,
-      })
-    }
-
-    animFrameRef.current = requestAnimationFrame(draw)
-  }, [nodes, filter])
-
-  useEffect(() => {
-    animFrameRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(animFrameRef.current)
-  }, [draw])
-
-  useEffect(() => {
-    const ro = new ResizeObserver(() => { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = requestAnimationFrame(draw) })
-    if (containerRef.current) ro.observe(containerRef.current)
-    return () => ro.disconnect()
-  }, [draw])
-
-  function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    const cx = (e.clientX - rect.left) * scaleX
-    const cy = (e.clientY - rect.top) * scaleY
-    const hit = nodesRef.current.find(n => Math.hypot(n.px - cx, n.py - cy) < 16)
-    if (hit) {
-      setTooltip({ node: hit, x: e.clientX - rect.left + 14, y: e.clientY - rect.top - 48 })
-    } else {
-      setTooltip(null)
-    }
-  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
@@ -212,14 +155,45 @@ export default function MapPage() {
       {/* Main: map + side panel */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
 
-        {/* Canvas map */}
-        <div ref={containerRef} style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          <canvas
-            ref={canvasRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setTooltip(null)}
-            style={{ display: 'block', width: '100%', height: '100%', cursor: 'crosshair' }}
-          />
+        {/* 3D Canvas map */}
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#080711' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(139,111,255,0.04) 0%, rgba(0,0,0,0) 60%)', zIndex: 0 }} />
+          
+          <Canvas camera={{ position: [0, 0, 80], fov: 60 }} style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+            <color attach="background" args={['#080711']} />
+            <fog attach="fog" args={['#080711', 40, 150]} />
+            <ambientLight intensity={0.5} />
+            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+            <OrbitControls 
+              enablePan={true} 
+              enableZoom={true} 
+              enableRotate={true}
+              minDistance={10}
+              maxDistance={120}
+              autoRotate={true}
+              autoRotateSpeed={0.5}
+            />
+            <DreamGalaxy nodes={nodes} filter={filter} setHoveredNode={setHoveredNode} />
+            
+            {/* 3D Tooltip Overlay */}
+            {hoveredNode && (
+              <Html position={[hoveredNode.x, hoveredNode.y, hoveredNode.z]} style={{ pointerEvents: 'none' }}>
+                <div style={{
+                  background: 'rgba(15,13,26,0.95)', border: '0.5px solid var(--border)',
+                  borderRadius: 10, padding: '10px 14px', maxWidth: 250, width: 'max-content',
+                  backdropFilter: 'blur(8px)', zIndex: 10,
+                  transform: 'translate3d(15px, -15px, 0)'
+                }}>
+                  <div style={{ fontSize: 10, letterSpacing: '1px', color: ARCHETYPE_COLORS[hoveredNode.node.archetype] || 'var(--accent)', marginBottom: 4 }}>
+                    {hoveredNode.node.archetype.toUpperCase()}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                    "{hoveredNode.node.text}"
+                  </div>
+                </div>
+              </Html>
+            )}
+          </Canvas>
 
           {/* Live count — desktop */}
           <div style={{
@@ -227,40 +201,20 @@ export default function MapPage() {
             display: 'flex', alignItems: 'center', gap: 6,
             background: 'rgba(8,7,17,0.75)', backdropFilter: 'blur(8px)',
             border: '0.5px solid var(--border)', borderRadius: 20,
-            padding: '5px 14px', fontSize: 11, color: 'var(--text-secondary)',
+            padding: '5px 14px', fontSize: 11, color: 'var(--text-secondary)', zIndex: 10
           }} className="desktop-live">
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade9a', animation: 'blink 2.5s infinite' }} />
             {liveCount.toLocaleString()} dreams mapped
           </div>
-
-          {/* Axis labels */}
-          {['conscious', 'unconscious'].map((label, i) => (
-            <div key={label} style={{
-              position: 'absolute',
-              top: i === 0 ? 16 : undefined,
-              bottom: i === 1 ? 16 : undefined,
-              left: '50%', transform: 'translateX(-50%)',
-              fontSize: 10, letterSpacing: '2px', color: 'rgba(255,255,255,0.12)',
-              pointerEvents: 'none',
-            }}>{label}</div>
-          ))}
-
-          {/* Tooltip */}
-          {tooltip && (
-            <div style={{
-              position: 'absolute', left: tooltip.x, top: tooltip.y,
-              background: 'rgba(15,13,26,0.95)', border: '0.5px solid var(--border)',
-              borderRadius: 10, padding: '10px 14px', maxWidth: 220,
-              pointerEvents: 'none', backdropFilter: 'blur(8px)', zIndex: 10,
-            }}>
-              <div style={{ fontSize: 10, letterSpacing: '1px', color: ARCHETYPE_COLORS[tooltip.node.archetype] || 'var(--accent)', marginBottom: 4 }}>
-                {tooltip.node.archetype.toUpperCase()}
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                "{tooltip.node.text}"
-              </div>
-            </div>
-          )}
+          
+          {/* Overlay controls helper */}
+          <div style={{
+            position: 'absolute', bottom: 16, left: 16,
+            fontSize: 10, letterSpacing: '2px', color: 'rgba(255,255,255,0.12)', zIndex: 10,
+            pointerEvents: 'none'
+          }}>
+            DRAG TO ROTATE · SCROLL TO ZOOM
+          </div>
         </div>
 
         {/* Side panel — desktop */}
@@ -269,6 +223,7 @@ export default function MapPage() {
           borderLeft: '0.5px solid var(--border)',
           display: 'flex', flexDirection: 'column',
           padding: '24px 20px', gap: 20, overflowY: 'auto',
+          zIndex: 10
         }} className="map-panel">
 
           <div>
