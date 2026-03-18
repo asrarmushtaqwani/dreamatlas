@@ -3,14 +3,11 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mood } from '@/types'
-
-const ACCENT = '#7dd3fc'
-const FONT_DISPLAY = "'Fraunces', Georgia, serif"
-const FONT_SERIF = "'Lora', Georgia, serif"
+import { motion, AnimatePresence } from 'framer-motion'
 
 const MOODS: { label: Mood; symbol: string; color: string }[] = [
   { label: 'Peaceful',    symbol: '◌', color: '#4ade9a' },
-  { label: 'Wondrous',    symbol: '◈', color: ACCENT },
+  { label: 'Wondrous',    symbol: '◈', color: '#7dd3fc' },
   { label: 'Anxious',     symbol: '◉', color: '#f59e0b' },
   { label: 'Euphoric',    symbol: '◎', color: '#e2c170' },
   { label: 'Terrifying',  symbol: '●', color: '#ff6b8a' },
@@ -58,55 +55,80 @@ export default function LogPage() {
   const pct = text.length / 1000
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 20px 80px', background: '#0f0e0d', position: 'relative' }}>
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 55% 45% at 50% 40%, ${ACCENT}06, transparent 65%)` }} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 20px 80px', position: 'relative' }}>
+      
+      {/* Localized aura that shifts based on text length */}
+      <div style={{ 
+        position: 'fixed', inset: 0, pointerEvents: 'none', 
+        background: `radial-gradient(ellipse 65% 55% at 50% 50%, rgba(125,211,252,${0.03 + (pct * 0.04)}), transparent 75%)`,
+        transition: 'background 1s ease'
+      }} />
 
-      <div style={{ width: '100%', maxWidth: 580, position: 'relative', zIndex: 1, animation: 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both' }}>
-        <Link href="/map" style={{ display: 'inline-block', color: 'rgba(240,236,230,0.28)', fontSize: 12, letterSpacing: '0.1em', textDecoration: 'none', marginBottom: 44, transition: 'color 0.2s' }}
-          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.5)'}
-          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.28)'}
-        >← atlas</Link>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 1 }}
+      >
+        <Link href="/map" style={{ 
+          display: 'inline-block', color: 'var(--text-tertiary)', fontSize: 13, 
+          letterSpacing: '0.05em', textDecoration: 'none', marginBottom: 44, transition: 'color 0.3s',
+          fontWeight: 500
+        }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
+        >← return to atlas</Link>
 
-        <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 'clamp(38px, 5vw, 54px)', fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: 8, color: '#f0ece6' }}>
-          What did you dream?
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(42px, 6vw, 64px)', fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 12 }}>
+          What did you <span className="text-gradient">dream?</span>
         </h1>
-        <p style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontSize: 15, color: 'rgba(240,236,230,0.38)', marginBottom: 30 }}>
-          Fragments are fine. Write as it comes.
+        <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 40 }}>
+          Fragments are fine. Write down the imagery that lingers.
         </p>
 
-        {/* Textarea */}
-        <div style={{ position: 'relative', marginBottom: 6 }}>
-          <textarea className="dream-input" value={text} onChange={e => setText(e.target.value)}
+        {/* Textarea container */}
+        <div className="glass-card" style={{ padding: '0', marginBottom: 32, overflow: 'hidden', position: 'relative' }}>
+          <textarea 
+            style={{
+              width: '100%', background: 'transparent', border: 'none', color: 'var(--text-primary)',
+              fontFamily: 'var(--font-display)', fontSize: 22, fontStyle: 'italic', padding: '36px',
+              resize: 'none', outline: 'none', lineHeight: 1.6
+            }}
+            value={text} onChange={e => setText(e.target.value)}
             placeholder="I was standing in a place that felt like home but looked like somewhere I'd never been…"
-            rows={7} maxLength={1000} disabled={loading} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'var(--border)', borderRadius: '0 0 16px 16px', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct * 100}%`, background: pct > 0.9 ? '#ff6b8a' : ACCENT, transition: 'width 0.1s, background 0.3s', borderRadius: '0 0 16px 16px' }} />
+            rows={7} maxLength={1000} disabled={loading} 
+          />
+          {/* Progress bar line */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.05)' }}>
+            <div style={{ height: '100%', width: `${pct * 100}%`, background: pct > 0.9 ? '#ff6b8a' : '#ffffff', transition: 'width 0.2s cubic-bezier(0.16,1,0.3,1), background 0.3s' }} />
           </div>
         </div>
-        <div style={{ textAlign: 'right', fontSize: 11, color: pct > 0.9 ? '#ff6b8a' : 'rgba(240,236,230,0.22)', marginBottom: 28, transition: 'color 0.3s' }}>
+        
+        <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 13, color: pct > 0.9 ? '#ff6b8a' : 'var(--text-tertiary)', marginBottom: 32, fontWeight: 500 }}>
           {text.length} / 1000
         </div>
 
-        {/* Mood */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.25)', marginBottom: 12 }}>Emotional tone</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {/* Mood Selector */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 16 }}>Emotional tone</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {MOODS.map(m => {
               const active = mood === m.label
               return (
                 <button key={m.label} onClick={() => setMood(active ? null : m.label)} disabled={loading} style={{
-                  padding: '8px 16px', borderRadius: 40, fontSize: 13, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                  border: `0.5px solid ${active ? m.color + '55' : 'rgba(255,255,255,0.07)'}`,
-                  background: active ? m.color + '14' : 'rgba(255,255,255,0.04)',
-                  color: active ? m.color : 'rgba(240,236,230,0.45)',
-                  transition: 'all 0.2s',
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '10px 20px', borderRadius: 40, fontSize: 14, cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontWeight: 500,
+                  border: `1px solid ${active ? m.color + '60' : 'rgba(255,255,255,0.08)'}`,
+                  background: active ? m.color + '15' : 'rgba(255,255,255,0.02)',
+                  color: active ? m.color : 'var(--text-secondary)',
+                  transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+                  backdropFilter: 'blur(10px)',
+                  display: 'flex', alignItems: 'center', gap: 8,
                 }}
-                  onMouseEnter={e => { if (!active) { const el = e.currentTarget as HTMLElement; el.style.borderColor = m.color + '35'; el.style.color = m.color } }}
-                  onMouseLeave={e => { if (!active) { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(255,255,255,0.07)'; el.style.color = 'rgba(240,236,230,0.45)' } }}
+                  onMouseEnter={e => { if (!active) { const el = e.currentTarget as HTMLElement; el.style.borderColor = m.color + '40'; el.style.color = '#fff' } }}
+                  onMouseLeave={e => { if (!active) { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(255,255,255,0.08)'; el.style.color = 'var(--text-secondary)' } }}
                 >
-                  <span style={{ fontSize: 11, color: active ? m.color : 'rgba(240,236,230,0.25)' }}>{m.symbol}</span>
+                  <span style={{ fontSize: 12, color: active ? m.color : 'var(--text-tertiary)' }}>{m.symbol}</span>
                   {m.label}
                 </button>
               )
@@ -115,35 +137,37 @@ export default function LogPage() {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 16 }}>
           <button onClick={toggleVoice} disabled={loading} title="Voice input" style={{
-            width: 52, height: 52, borderRadius: 12, flexShrink: 0,
-            border: `0.5px solid ${recording ? '#ff6b8a' : 'rgba(255,255,255,0.07)'}`,
-            background: recording ? 'rgba(255,107,138,0.1)' : 'rgba(255,255,255,0.04)',
-            color: recording ? '#ff6b8a' : 'rgba(240,236,230,0.45)',
-            cursor: 'pointer', fontSize: 18,
+            width: 58, height: 58, borderRadius: 16, flexShrink: 0,
+            border: `1px solid ${recording ? '#ff6b8a' : 'rgba(255,255,255,0.1)'}`,
+            background: recording ? 'rgba(255,107,138,0.15)' : 'rgba(255,255,255,0.03)',
+            color: recording ? '#ff6b8a' : 'var(--text-secondary)',
+            cursor: 'pointer', fontSize: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.2s',
+            transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+            backdropFilter: 'blur(10px)'
           }}>🎤</button>
 
-          <button className="btn-primary" onClick={submit} disabled={loading || text.trim().length < 10} style={{ flex: 1 }}>
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                <span style={{ display: 'flex', gap: 4 }}>
-                  {[0,1,2].map(i => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(15,14,13,0.6)', display: 'inline-block', animation: `thinkBounce 1.4s ease-in-out ${i * 0.15}s infinite` }} />)}
-                </span>
-                {THINK_STEPS[thinkStep]}
-              </span>
-            ) : 'send into the atlas'}
+          <button className="btn-premium" onClick={submit} disabled={loading || text.trim().length < 10} style={{ flex: 1, fontSize: 18 }}>
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                  <span style={{ display: 'flex', gap: 5 }}>
+                    {[0,1,2].map(i => <motion.span key={i} animate={{ y: [0, -4, 0] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }} style={{ width: 6, height: 6, borderRadius: '50%', background: '#000', display: 'inline-block' }} />)}
+                  </span>
+                  {THINK_STEPS[thinkStep]}
+                </motion.div>
+              ) : (
+                <motion.span key="ready" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  Send into the atlas
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,700&family=Lora:ital@1&display=swap');
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes thinkBounce { 0%,100%{opacity:0.25;transform:translateY(0)} 50%{opacity:1;transform:translateY(-5px)} }
-      `}</style>
     </div>
   )
 }

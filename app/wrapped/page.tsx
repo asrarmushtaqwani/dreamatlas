@@ -4,10 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { WrappedSnapshot } from '@/types'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
 import Link from 'next/link'
-
-const ACCENT = '#7dd3fc'
-const FONT_DISPLAY = "'Fraunces', Georgia, serif"
-const FONT_SERIF = "'Lora', Georgia, serif"
+import { motion } from 'framer-motion'
 
 type WrappedState = 'loading' | 'generating' | 'found' | 'none' | 'error'
 
@@ -33,125 +30,121 @@ export default function WrappedPage() {
     } catch { setError('Connection failed'); setState('error') }
   }
 
-  const accent = wrapped?.top_archetype ? ARCHETYPE_COLORS[wrapped.top_archetype] : ACCENT
+  const accent = wrapped?.top_archetype ? ARCHETYPE_COLORS[wrapped.top_archetype] : 'var(--accent)'
+  const isHex = typeof accent === 'string' && accent.startsWith('#')
 
   if (state === 'loading' || state === 'generating') return (
-    <div style={{ minHeight: '100vh', background: '#0f0e0d', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[0,1,2,3].map(i => <div key={i} style={{ width: 3, height: 28, borderRadius: 2, background: ACCENT, animation: `wave 1.2s ease-in-out ${i * 0.15}s infinite` }} />)}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, padding: 20 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {[0,1,2,3].map(i => <motion.div key={i} animate={{ height: [12, 36, 12] }} transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }} style={{ width: 4, borderRadius: 2, background: isHex ? accent : '#fff' }} />)}
       </div>
-      <p style={{ color: 'rgba(240,236,230,0.28)', fontSize: 13, letterSpacing: '0.1em' }}>
-        {state === 'generating' ? 'weaving your month together…' : 'opening your wrapped…'}
+      <p style={{ color: 'var(--text-tertiary)', fontSize: 13, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>
+        {state === 'generating' ? 'Weaving your month together…' : 'Opening your wrapped…'}
       </p>
-      <style>{`@keyframes wave{0%,100%{transform:scaleY(0.4);opacity:0.3}50%{transform:scaleY(1);opacity:1}}`}</style>
     </div>
   )
 
   if (state === 'none') return (
-    <div style={{ minHeight: '100vh', background: '#0f0e0d', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
-      <p style={{ color: 'rgba(240,236,230,0.45)', fontSize: 20, fontFamily: FONT_DISPLAY, fontStyle: 'italic', marginBottom: 16 }}>No dreams logged this month yet.</p>
-      <Link href="/log" style={{ color: ACCENT, fontSize: 14, textDecoration: 'underline', textUnderlineOffset: 3 }}>Log your first dream →</Link>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
+      <p style={{ color: 'var(--text-secondary)', fontSize: 28, fontFamily: 'var(--font-display)', fontStyle: 'italic', marginBottom: 24 }}>No dreams logged this month.</p>
+      <Link href="/log" style={{ color: '#fff', fontSize: 15, textDecoration: 'underline', textUnderlineOffset: 4, fontWeight: 500 }}>Log your first dream</Link>
     </div>
   )
 
   if (state === 'error') return (
-    <div style={{ minHeight: '100vh', background: '#0f0e0d', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-      <p style={{ color: 'rgba(240,236,230,0.45)', fontFamily: FONT_SERIF, fontStyle: 'italic' }}>{error}</p>
-      <button onClick={generate} style={{ color: ACCENT, background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, textDecoration: 'underline' }}>Try again</button>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+      <p style={{ color: '#ff6b8a', fontFamily: 'var(--font-body)', fontSize: 16 }}>{error}</p>
+      <button onClick={generate} className="btn-glass">Try again</button>
     </div>
   )
 
   if (!wrapped) return null
 
-  const isHex = typeof accent === 'string' && accent.startsWith('#')
-
   return (
-    <div style={{ minHeight: '100vh', background: '#0f0e0d', color: '#f0ece6', padding: '56px 24px 80px' }}>
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 55% 40% at 50% 25%, ${isHex ? accent + '08' : ACCENT + '06'}, transparent)` }} />
+    <div style={{ minHeight: '100vh', padding: '0 0 100px', position: 'relative' }}>
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 65% 55% at 50% 30%, ${isHex ? accent + '12' : 'var(--accent)'}, transparent)` }} />
 
-      <div style={{ position: 'relative', maxWidth: 460, margin: '0 auto', animation: 'fadeUp 0.6s both' }}>
-        <Link href="/journal" style={{ color: 'rgba(240,236,230,0.25)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 28, transition: 'color 0.2s' }}
-          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.5)'}
-          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.25)'}
-        >← Journal</Link>
+      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 100, marginBottom: 40 }}>
+        <div style={{ maxWidth: 500, margin: '0 auto' }}>
+          <Link href="/journal" style={{ color: 'var(--text-tertiary)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', transition: 'color 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
+          >← Return to Journal</Link>
+        </div>
+      </div>
 
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
+        
         {/* Card */}
-        <div style={{ borderRadius: 24, border: `0.5px solid ${isHex ? accent + '20' : 'rgba(255,255,255,0.07)'}`, overflow: 'hidden', background: `linear-gradient(160deg, rgba(255,255,255,0.05) 0%, rgba(15,14,13,0) 60%, ${isHex ? accent + '06' : 'transparent'} 100%)`, boxShadow: '0 24px 60px rgba(0,0,0,0.4)', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${isHex ? accent + '45' : ACCENT + '35'}, transparent)` }} />
+        <div className="glass-card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: `1px solid ${isHex ? accent + '40' : 'rgba(255,255,255,0.1)'}` }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${isHex ? accent : '#fff'}, transparent)`, opacity: 0.6 }} />
 
-          <div style={{ padding: '32px 28px' }}>
+          <div style={{ padding: '40px 32px' }}>
             {/* Month */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: isHex ? accent : ACCENT, marginBottom: 24 }}>
-              <span>✦</span><span>Dream Wrapped · {getMonthName(wrapped.month)}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, color: isHex ? accent : '#fff', marginBottom: 32 }}>
+              <span style={{ fontSize: 14 }}>✦</span>
+              <span>Dream Wrapped · {getMonthName(wrapped.month)}</span>
             </div>
 
             {/* Count */}
-            <div style={{ marginBottom: 22 }}>
-              <div style={{ fontFamily: FONT_DISPLAY, fontSize: 72, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.03em', color: isHex ? accent : ACCENT, marginBottom: 6 }}>{wrapped.dream_count}</div>
-              <div style={{ color: 'rgba(240,236,230,0.28)', fontSize: 13, letterSpacing: '0.06em' }}>dream{wrapped.dream_count !== 1 ? 's' : ''} this month</div>
+            <div style={{ marginBottom: 32 }}>
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(72px, 12vw, 96px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.03em', color: isHex ? accent : '#fff', marginBottom: 8 }}>
+                {wrapped.dream_count}
+              </motion.div>
+              <div style={{ color: 'var(--text-tertiary)', fontSize: 14, letterSpacing: '0.08em', fontWeight: 600, textTransform: 'uppercase' }}>dream{wrapped.dream_count !== 1 ? 's' : ''} this month</div>
             </div>
 
-            <div style={{ height: 0.5, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', marginBottom: 22 }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.1), transparent)', marginBottom: 32 }} />
 
             {wrapped.top_archetype && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 7 }}>Dominant archetype</div>
-                <div style={{ fontFamily: FONT_DISPLAY, fontSize: 26, fontWeight: 700, fontStyle: 'italic', color: isHex ? accent : ACCENT, letterSpacing: '-0.01em' }}>{wrapped.top_archetype}</div>
-              </div>
+              <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }} style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 8 }}>Dominant archetype</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, fontStyle: 'italic', color: isHex ? accent : '#fff', letterSpacing: '-0.01em' }}>{wrapped.top_archetype}</div>
+              </motion.div>
             )}
 
             {wrapped.top_symbols?.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 10 }}>Recurring symbols</div>
+              <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }} style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 12 }}>Recurring symbols</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {wrapped.top_symbols.map((sym, i) => <span key={sym} style={{ padding: '5px 14px', borderRadius: 40, fontSize: 13, border: '0.5px solid rgba(255,255,255,0.08)', color: `rgba(240,236,230,${0.65 - i * 0.07})`, background: 'rgba(255,255,255,0.05)', fontFamily: FONT_SERIF, fontStyle: 'italic' }}>{sym}</span>)}
+                  {wrapped.top_symbols.map((sym, i) => <span key={sym} style={{ padding: '6px 16px', borderRadius: 12, fontSize: 14, border: '1px solid rgba(255,255,255,0.1)', color: i === 0 ? '#fff' : 'var(--text-secondary)', background: 'rgba(255,255,255,0.03)', fontWeight: 500 }}>{sym}</span>)}
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {wrapped.streak_peak > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 7 }}>Longest streak</div>
-                <div style={{ fontFamily: FONT_DISPLAY, fontSize: 20, fontWeight: 700 }}>{wrapped.streak_peak} consecutive {wrapped.streak_peak === 1 ? 'day' : 'days'}</div>
-              </div>
+              <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.6 }} style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 8 }}>Longest streak</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--text-secondary)' }}>{wrapped.streak_peak} consecutive {wrapped.streak_peak === 1 ? 'day' : 'days'}</div>
+              </motion.div>
             )}
 
             {wrapped.dreamworld_titles?.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 10 }}>Dreamworlds entered</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {wrapped.dreamworld_titles.map(t => <div key={t} style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'rgba(240,236,230,0.45)', fontSize: 14, fontFamily: FONT_SERIF }}><span style={{ color: isHex ? accent : ACCENT, fontSize: 10 }}>✦</span>{t}</div>)}
+              <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.7 }} style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 12 }}>Dreamworlds explored</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {wrapped.dreamworld_titles.map(t => <div key={t} style={{ display: 'flex', gap: 12, alignItems: 'center', color: '#fff', fontSize: 15, fontWeight: 500 }}><span style={{ color: isHex ? accent : '#fff', fontSize: 14 }}>✦</span>{t}</div>)}
                 </div>
-              </div>
+              </motion.div>
             )}
 
-            <div style={{ height: 0.5, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', marginBottom: 22 }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.1), transparent)', marginBottom: 32 }} />
 
-            {wrapped.essence_summary && <p style={{ color: 'rgba(240,236,230,0.45)', fontSize: 15, fontStyle: 'italic', lineHeight: 1.8, margin: '0 0 24px', fontFamily: FONT_DISPLAY, fontWeight: 400, letterSpacing: '-0.005em' }}>"{wrapped.essence_summary}"</p>}
+            {wrapped.essence_summary && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.9 }} style={{ color: 'var(--text-secondary)', fontSize: 18, fontStyle: 'italic', lineHeight: 1.7, margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400 }}>"{wrapped.essence_summary}"</motion.p>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'rgba(240,236,230,0.18)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>DreamAtlas</span>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {[0.28, 0.48, 0.72].map((op, i) => <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', background: isHex ? accent : ACCENT, opacity: op }} />)}
-              </div>
+              <span style={{ color: 'var(--text-tertiary)', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase' }}>DreamAtlas Wrapped</span>
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 22, textAlign: 'center', display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[{ href: '/journal', label: 'Journal' }, { href: '/dreamworlds', label: 'Worlds' }, { href: '/twins', label: 'Twins' }].map(({ href, label }) => (
-            <Link key={href} href={href} style={{ color: 'rgba(240,236,230,0.25)', fontSize: 13, textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.5)'}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.25)'}
-            >{label}</Link>
-          ))}
+        <div style={{ marginTop: 32, display: 'flex', gap: 16, justifyContent: 'center' }}>
+          <Link href="/journal"><button className="btn-glass" style={{ padding: '12px 24px', fontSize: 14 }}>Journal</button></Link>
+          <Link href="/twins"><button className="btn-glass" style={{ padding: '12px 24px', fontSize: 14 }}>Twins</button></Link>
         </div>
-      </div>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;1,700&family=Lora:ital@1&display=swap');
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-      `}</style>
+      </motion.div>
     </div>
   )
 }

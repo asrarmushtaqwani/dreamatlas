@@ -4,10 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { DreamTwinMatch } from '@/types'
 import { ARCHETYPE_COLORS } from '@/lib/dreams'
-
-const ACCENT = '#7dd3fc'
-const FONT_DISPLAY = "'Fraunces', Georgia, serif"
-const FONT_SERIF = "'Lora', Georgia, serif"
+import { motion, AnimatePresence } from 'framer-motion'
 
 type TwinState = 'idle' | 'loading' | 'found' | 'error'
 
@@ -44,110 +41,134 @@ export default function TwinsPage() {
   }
 
   const tooFew  = myDreamCount < 3
-  const twinCol = (twin as any)?.twin_profile?.avatar_color || ACCENT
+  const twinCol = (twin as any)?.twin_profile?.avatar_color || 'var(--accent)'
+  
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+  }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f0e0d', color: '#f0ece6', paddingBottom: 80, position: 'relative' }}>
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 50% 40% at 50% 30%, ${ACCENT}05, transparent 65%)` }} />
+    <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
+      {/* Background glow specific to twins */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255,255,255,0.03), transparent 70%)` }} />
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: 500, margin: '0 auto', padding: '56px 24px' }}>
-        <Link href="/map" style={{ color: 'rgba(240,236,230,0.25)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', display: 'block', marginBottom: 44, transition: 'color 0.2s' }}
-          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.5)'}
-          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.25)'}
-        >← Atlas</Link>
-
-        <div style={{ textAlign: 'center', marginBottom: 52, animation: 'fadeUp 0.6s both' }}>
-          <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 16 }}>Dream Twins</div>
-          <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: 14 }}>
-            Your unconscious<br />doppelgänger
-          </h1>
-          <p style={{ color: 'rgba(240,236,230,0.38)', fontSize: 16, lineHeight: 1.75, fontFamily: FONT_SERIF, fontStyle: 'italic' }}>
-            Somewhere on earth, another mind dreams<br />the same territories you do.
-          </p>
+      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <Link href="/map" style={{ color: 'var(--text-tertiary)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', transition: 'color 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
+          >← Return to Atlas</Link>
         </div>
-
-        {state === 'idle' && (
-          tooFew ? (
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '24px', textAlign: 'center', animation: 'scaleIn 0.4s both' }}>
-              <p style={{ color: 'rgba(240,236,230,0.45)', fontSize: 15, marginBottom: 8, fontFamily: FONT_SERIF, fontStyle: 'italic' }}>Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to find your twin.</p>
-              <p style={{ color: 'rgba(240,236,230,0.22)', fontSize: 13 }}>Twins are matched by comparing archetype fingerprints.</p>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', animation: 'fadeUp 0.5s 0.2s both' }}>
-              <button onClick={findTwin} style={{ background: 'transparent', border: `0.5px solid ${ACCENT}40`, color: ACCENT, borderRadius: 12, padding: '13px 36px', fontSize: 14, cursor: 'pointer', letterSpacing: '0.06em', transition: 'all 0.2s', fontFamily: "'DM Sans', sans-serif" }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = `${ACCENT}10`; el.style.borderColor = ACCENT; el.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'transparent'; el.style.borderColor = `${ACCENT}40`; el.style.transform = 'translateY(0)' }}
-              >Find my twin</button>
-            </div>
-          )
-        )}
-
-        {state === 'loading' && (
-          <div style={{ textAlign: 'center', animation: 'fadeIn 0.4s both' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 7, marginBottom: 14 }}>
-              {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: ACCENT, animation: `thinkBounce 1.4s ease-in-out ${i * 0.18}s infinite` }} />)}
-            </div>
-            <p style={{ color: 'rgba(240,236,230,0.28)', fontSize: 13, letterSpacing: '0.1em' }}>scanning the collective unconscious…</p>
-          </div>
-        )}
-
-        {state === 'error' && (
-          <div style={{ textAlign: 'center', animation: 'fadeIn 0.4s both' }}>
-            <p style={{ color: 'rgba(240,236,230,0.45)', fontStyle: 'italic', marginBottom: 16, fontFamily: FONT_SERIF }}>{error}</p>
-            <button onClick={() => setState('idle')} style={{ color: ACCENT, background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, textDecoration: 'underline', textUnderlineOffset: 3 }}>Try again</button>
-          </div>
-        )}
-
-        {state === 'found' && twin && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, animation: 'scaleIn 0.45s both' }}>
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: `0.5px solid ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '20' : 'rgba(255,255,255,0.07)'}`, borderRadius: 20, padding: '30px 26px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: `linear-gradient(90deg, transparent, ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '40' : ACCENT + '30'}, transparent)` }} />
-
-              <div style={{ width: 58, height: 58, borderRadius: '50%', margin: '0 auto 18px', background: typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '16' : `${ACCENT}16`, border: `0.5px solid ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '30' : ACCENT + '25'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, boxShadow: `0 0 24px ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '18' : ACCENT + '15'}` }}>🌙</div>
-
-              <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 6 }}>Your twin</div>
-              <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 24, fontWeight: 700, fontStyle: 'italic', marginBottom: 20, letterSpacing: '-0.01em' }}>{(twin as any).twin_profile?.dream_name || 'unknown dreamer'}</h2>
-
-              <div style={{ marginBottom: 20, textAlign: 'left' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(240,236,230,0.25)', letterSpacing: '0.1em' }}>Unconscious similarity</span>
-                  <span style={{ fontSize: 12, color: 'rgba(240,236,230,0.45)' }}>{Math.round(twin.similarity_score * 100)}%</span>
-                </div>
-                <div style={{ height: 2, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', borderRadius: 2, width: `${twin.similarity_score * 100}%`, background: typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol : ACCENT, boxShadow: `0 0 8px ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol : ACCENT}`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
-                </div>
-              </div>
-
-              {twin.shared_archetypes?.length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(240,236,230,0.22)', marginBottom: 10 }}>Shared territories</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-                    {twin.shared_archetypes.map(a => { const c = ARCHETYPE_COLORS[a] || ACCENT; return <span key={a} style={{ padding: '5px 14px', borderRadius: 40, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600, color: c, border: `0.5px solid ${c}30`, background: `${c}10` }}>{a}</span> })}
-                  </div>
-                </div>
-              )}
-
-              {reasoning && <p style={{ color: 'rgba(240,236,230,0.38)', fontStyle: 'italic', fontSize: 14, lineHeight: 1.7, borderTop: '0.5px solid rgba(255,255,255,0.07)', paddingTop: 18, margin: 0, fontFamily: FONT_SERIF }}>"{reasoning}"</p>}
-            </div>
-
-            <p style={{ textAlign: 'center', color: 'rgba(240,236,230,0.2)', fontSize: 12 }}>Twins are recalculated as new dreamers join.</p>
-            <div style={{ textAlign: 'center' }}>
-              <button onClick={findTwin} style={{ color: 'rgba(240,236,230,0.28)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, textDecoration: 'underline', textUnderlineOffset: 3, transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.5)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(240,236,230,0.28)'}
-              >Recalculate</button>
-            </div>
-          </div>
-        )}
       </div>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,700&family=Lora:ital@1&display=swap');
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-        @keyframes scaleIn { from{opacity:0;transform:scale(0.93)} to{opacity:1;transform:scale(1)} }
-        @keyframes thinkBounce { 0%,100%{opacity:0.25;transform:translateY(0)} 50%{opacity:1;transform:translateY(-5px)} }
-      `}</style>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 600, margin: '0 auto', padding: '40px 5vw' }}>
+        
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 16 }}>Dream Twins</div>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16, color: '#fff' }}>
+            Your unconscious <span className="text-gradient">doppelgänger</span>
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 18, lineHeight: 1.6, fontFamily: 'var(--font-body)', fontWeight: 400 }}>
+            Somewhere on earth, another mind dreams the exact same territories as you.
+          </p>
+        </motion.div>
+
+        <AnimatePresence mode="wait">
+          {state === 'idle' && (
+            <motion.div key="idle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.4 }}>
+              {tooFew ? (
+                <div className="glass-card" style={{ padding: '32px', textAlign: 'center' }}>
+                   <p style={{ color: '#fff', fontSize: 18, marginBottom: 12, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 600 }}>Log {3 - myDreamCount} more dream{3 - myDreamCount !== 1 ? 's' : ''} to unlock your twin.</p>
+                   <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Twins are matched by comparing dense archetype fingerprints built over time.</p>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <button onClick={findTwin} className="btn-premium" style={{ width: '100%', maxWidth: 300, fontSize: 17, padding: '20px' }}>
+                    Find my twin
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {state === 'loading' && (
+            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
+                {[0,1,2].map(i => <motion.div key={i} animate={{ y: [0, -8, 0] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }} style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />)}
+              </div>
+              <p style={{ color: 'var(--text-tertiary)', fontSize: 13, letterSpacing: '0.15em', fontWeight: 500, textTransform: 'uppercase' }}>Scanning the collective unconscious…</p>
+            </motion.div>
+          )}
+
+          {state === 'error' && (
+            <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ textAlign: 'center' }}>
+              <p style={{ color: '#ff6b8a', fontSize: 16, marginBottom: 24, padding: '16px', background: 'rgba(255,107,138,0.1)', borderRadius: 12 }}>{error}</p>
+              <button onClick={() => setState('idle')} className="btn-glass">Try again</button>
+            </motion.div>
+          )}
+
+          {state === 'found' && twin && (
+            <motion.div key="found" variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="glass-card" style={{ padding: '40px 32px', textAlign: 'center', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 2, background: `linear-gradient(90deg, transparent, ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '80' : 'rgba(255,255,255,0.5)'}, transparent)` }} />
+
+                <div style={{ 
+                  width: 72, height: 72, borderRadius: '50%', margin: '0 auto 24px', 
+                  background: typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '15' : 'rgba(255,255,255,0.05)', 
+                  border: `1px solid ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '40' : 'rgba(255,255,255,0.15)'}`, 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, 
+                  boxShadow: `0 0 40px ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol + '30' : 'rgba(255,255,255,0.1)'}` 
+                }}>🌙</div>
+
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 8 }}>Your Twin</div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, fontStyle: 'italic', marginBottom: 32, letterSpacing: '-0.01em', color: '#fff' }}>
+                  {(twin as any).twin_profile?.dream_name || 'unknown dreamer'}
+                </h2>
+
+                <div style={{ marginBottom: 32, textAlign: 'left', background: 'rgba(0,0,0,0.2)', padding: '20px', borderRadius: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, alignItems: 'baseline' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Unconscious Similarity</span>
+                    <span style={{ fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 600, color: '#fff' }}>{Math.round(twin.similarity_score * 100)}%</span>
+                  </div>
+                  <div style={{ height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 4, overflow: 'hidden' }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${twin.similarity_score * 100}%` }} transition={{ duration: 1.5, ease: "easeOut" }} 
+                      style={{ height: '100%', borderRadius: 4, background: typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol : '#ffffff', boxShadow: `0 0 12px ${typeof twinCol === 'string' && twinCol.startsWith('#') ? twinCol : '#ffffff'}` }} 
+                    />
+                  </div>
+                </div>
+
+                {twin.shared_archetypes?.length > 0 && (
+                  <div style={{ marginBottom: 28 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 14 }}>Shared Territories</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+                      {twin.shared_archetypes.map(a => { 
+                        const c = ARCHETYPE_COLORS[a] || '#ffffff'
+                        return <span key={a} style={{ padding: '6px 16px', borderRadius: 40, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600, color: c, border: `1px solid ${c}40`, background: `${c}10` }}>{a}</span> 
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {reasoning && (
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, marginTop: 12 }}>
+                    <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: 16, lineHeight: 1.7, fontFamily: 'var(--font-display)', margin: 0 }}>"{reasoning}"</p>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: 16 }}>
+                <p style={{ color: 'var(--text-tertiary)', fontSize: 13, marginBottom: 12 }}>Twins dynamically evolve as new dreamers map the atlas.</p>
+                <button onClick={findTwin} style={{ color: '#fff', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: 4, transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#fff'}
+                >Recalculate Convergence</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
     </div>
   )
 }

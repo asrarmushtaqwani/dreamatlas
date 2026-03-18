@@ -11,8 +11,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <div className="ambient-bg" />
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div className="ambient-deep" />
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           {children}
         </div>
       </body>
