@@ -136,6 +136,14 @@ body {
   transform: translateY(-2px);
 }
 
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
+}
+
 /* Ambient Deep Background */
 .ambient-deep {
   position: fixed; inset: 0; pointer-events: none; z-index: -1;
