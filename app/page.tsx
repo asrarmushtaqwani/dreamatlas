@@ -100,8 +100,7 @@ export default function LandingPage() {
           style={{ 
             position: 'relative', zIndex: 10, textAlign: 'center', 
             y: yHeroText, opacity: opacityHeroText,
-            maxWidth: 1000, padding: '0 24px',
-            mixBlendMode: 'difference', color: '#fff'
+            maxWidth: 1000, padding: '0 24px'
           }}
         >
           <motion.div variants={fadeInUp} style={{
@@ -117,6 +116,7 @@ export default function LandingPage() {
           <motion.h1 
             variants={fadeInUp}
             style={{ 
+              opacity: 0, pointerEvents: 'none', userSelect: 'none',
               fontFamily: 'var(--font-display)', fontWeight: 600,
               fontSize: 'clamp(56px, 9vw, 110px)', lineHeight: 0.95, letterSpacing: '-0.03em',
               marginBottom: 32

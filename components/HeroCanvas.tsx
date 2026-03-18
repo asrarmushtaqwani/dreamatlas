@@ -1,10 +1,10 @@
 'use client'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { MeshTransmissionMaterial, Float, Environment, ContactShadows, Preload } from '@react-three/drei'
+import { MeshTransmissionMaterial, Float, Environment, ContactShadows, Preload, Text } from '@react-three/drei'
 import { useRef } from 'react'
 import * as THREE from 'three'
 
-function GlassHeroMesh() {
+function GlassHeroScene() {
   const mesh = useRef<THREE.Mesh>(null)
   const { viewport } = useThree()
   
@@ -12,19 +12,42 @@ function GlassHeroMesh() {
     if (mesh.current) {
       mesh.current.rotation.x += delta * 0.15
       mesh.current.rotation.y += delta * 0.2
-      // True edge-to-edge interactive mouse follow
+      
       const targetX = state.pointer.x * (viewport.width / 2)
       const targetY = state.pointer.y * (viewport.height / 2)
       
-      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, targetX, 0.035)
-      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.035)
+      // Dramatically slowed down the tracking lerp for a very heavy, smooth trailing float
+      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, targetX, 0.018)
+      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.018)
     }
   })
 
+  // Calculate a responsive font size based on the 3D viewport dimensions
+  const vw = viewport.width
+  const fontSize = Math.max(Math.min(vw * 0.08, 1.2), 0.5)
+
   return (
     <group position={[0, 0, 0]}>
+      
+      {/* 3D Typographic Background (Enables true glass refraction physics over text) */}
+      <Text
+        position={[0, 0.6, -1.5]}
+        fontSize={fontSize}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        textAlign="center"
+        lineHeight={0.95}
+        letterSpacing={-0.03}
+        fontWeight={700}
+        font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+      >
+        Map your unconscious.{"\n"}In absolute seconds.
+      </Text>
+
+      {/* Hero Glass Orb */}
       <Float floatIntensity={4} rotationIntensity={2} speed={3}>
-        <mesh ref={mesh} scale={0.8}>
+        <mesh ref={mesh} position={[0, 0, 1.5]} scale={0.8}>
           <icosahedronGeometry args={[1, 1]} />
           <MeshTransmissionMaterial 
             backside={false}
@@ -56,7 +79,7 @@ export default function HeroCanvas() {
     <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
       <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 6], fov: 45 }} eventSource={typeof document !== 'undefined' ? document.body : undefined}>
         <Environment preset="city" />
-        <GlassHeroMesh />
+        <GlassHeroScene />
         <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
         <Preload all />
       </Canvas>
