@@ -61,12 +61,52 @@ export default function WrappedPage() {
   if (!wrapped) return null
 
   return (
-    <div style={{ minHeight: '100vh', padding: '0 0 100px', position: 'relative' }}>
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 65% 55% at 50% 30%, ${isHex ? accent + '12' : 'var(--accent)'}, transparent)` }} />
+    <div style={{ position: 'relative', width: '100%', overflowX: 'hidden' }}>
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 65% 55% at 50% 40%, ${isHex ? accent + '10' : 'var(--accent)'}, transparent 70%)` }} />
 
+      {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', minHeight: '60vh', width: '100%', 
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        paddingTop: 80 
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }}
+          style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 1000, padding: '0 24px' }}
+        >
+          <div style={{
+            display: 'inline-flex', padding: '8px 20px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 32, alignItems: 'center', gap: 10
+          }}>
+            <span style={{ width: 8, height: 8, background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent)' }} />
+            <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Monthly Insights</span>
+          </div>
 
+          <h1 style={{ 
+            fontFamily: 'var(--font-display)', fontWeight: 600,
+            fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 0.95, letterSpacing: '-0.03em',
+            marginBottom: 24
+          }}>
+            Your Wrapped.
+          </h1>
 
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
+          <p style={{
+            fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-secondary)',
+            maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.6, fontWeight: 400
+          }}>
+            A complete synthesis of your unconscious architecture over the last 30 days.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ── CONTENT GRID ─────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', zIndex: 10, padding: '40px 5vw 80px', minHeight: '50vh',
+        background: 'linear-gradient(180deg, transparent, rgba(5,5,8,0.8) 20%)'
+      }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" as any }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto' }}>
         
         {/* Card */}
         <div className="glass-card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: `1px solid ${isHex ? accent + '40' : 'rgba(255,255,255,0.1)'}` }}>
@@ -137,7 +177,8 @@ export default function WrappedPage() {
           <Link href="/journal"><button className="btn-glass" style={{ padding: '12px 24px', fontSize: 14 }}>Journal</button></Link>
           <Link href="/twins"><button className="btn-glass" style={{ padding: '12px 24px', fontSize: 14 }}>Twins</button></Link>
         </div>
-      </motion.div>
+        </motion.div>
+      </section>
     </div>
   )
 }

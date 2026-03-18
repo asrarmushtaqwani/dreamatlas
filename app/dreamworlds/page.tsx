@@ -48,19 +48,51 @@ export default function DreamworldsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
+    <div style={{ position: 'relative', width: '100%', overflowX: 'hidden' }}>
       
-      {/* Header */}
-      <div style={{ padding: '40px 5vw 0', zIndex: 10 }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 44px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, color: '#fff' }}>
-            <span >Dream</span>worlds
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-display)', margin: 0 }}>Nine territories of the collective unconscious.</p>
-        </div>
-      </div>
+      {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', minHeight: '60vh', width: '100%', 
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        paddingTop: 80 
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }}
+          style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 1000, padding: '0 24px' }}
+        >
+          <div style={{
+            display: 'inline-flex', padding: '8px 20px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 32, alignItems: 'center', gap: 10
+          }}>
+            <span style={{ width: 8, height: 8, background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent)' }} />
+            <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>The Collective</span>
+          </div>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 5vw' }}>
+          <h1 style={{ 
+            fontFamily: 'var(--font-display)', fontWeight: 600,
+            fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 0.95, letterSpacing: '-0.03em',
+            marginBottom: 24
+          }}>
+            Dreamworlds.
+          </h1>
+
+          <p style={{
+            fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-secondary)',
+            maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.6, fontWeight: 400
+          }}>
+            Nine canonical territories of the collective unconscious. Every dream logged contributes to a shared world.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ── CONTENT GRID ─────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', zIndex: 10, padding: '80px 5vw', minHeight: '50vh',
+        background: 'linear-gradient(180deg, transparent, rgba(5,5,8,0.8) 20%)'
+      }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         
         <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 24 }}>
           {worlds.map((world) => {
@@ -122,7 +154,8 @@ export default function DreamworldsPage() {
           })}
         </motion.div>
 
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

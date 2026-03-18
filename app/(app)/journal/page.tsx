@@ -48,21 +48,45 @@ export default function JournalPage() {
   const visible    = filter === 'all' ? dreams : dreams.filter(d => d.archetypes.includes(filter as Archetype))
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
+    <div style={{ position: 'relative', width: '100%', overflowX: 'hidden' }}>
 
-      {/* Header */}
-      <div style={{ padding: '40px 5vw 0', zIndex: 50 }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 16 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-              Your <span >journal</span>
-            </h1>
-            {!loading && dreams.length > 0 && (
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{dreams.length} dream{dreams.length !== 1 ? 's' : ''}</span>
-            )}
+      {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', minHeight: '60vh', width: '100%', 
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        paddingTop: 80 
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }}
+          style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 1000, padding: '0 24px' }}
+        >
+          <div style={{
+            display: 'inline-flex', padding: '8px 20px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 32, alignItems: 'center', gap: 10
+          }}>
+            <span style={{ width: 8, height: 8, background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent)' }} />
+            <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Your Chronicle</span>
           </div>
+
+          <h1 style={{ 
+            fontFamily: 'var(--font-display)', fontWeight: 600,
+            fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 0.95, letterSpacing: '-0.03em',
+            marginBottom: 24
+          }}>
+            The Journal.
+          </h1>
+
+          <p style={{
+            fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-secondary)',
+            maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.6, fontWeight: 400
+          }}>
+            A complete archive of your trips into the collective unconscious. {!loading && dreams.length > 0 ? `You have logged ${dreams.length} dreams.` : ''}
+          </p>
+
           {archetypes.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 600, margin: '0 auto' }}>
               <button className={`chip ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All Insights</button>
               {archetypes.map(a => (
                 <button key={a} className={`chip ${filter === a ? 'active' : ''}`} onClick={() => setFilter(filter === a ? 'all' : a)}
@@ -71,10 +95,15 @@ export default function JournalPage() {
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
-      <div style={{ padding: '40px 5vw', maxWidth: 1000, margin: '0 auto' }}>
+      {/* ── CONTENT GRID ─────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', zIndex: 10, padding: '80px 5vw', minHeight: '50vh',
+        background: 'linear-gradient(180deg, transparent, rgba(5,5,8,0.8) 20%)'
+      }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
         {loading && (
           <div style={{ textAlign: 'center', padding: 80, color: 'var(--text-tertiary)', fontSize: 15, fontWeight: 500 }}>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
@@ -156,7 +185,8 @@ export default function JournalPage() {
             )
           })}
         </motion.div>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

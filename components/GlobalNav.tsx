@@ -18,7 +18,8 @@ export function GlobalNav() {
     { href: '/journal', label: 'Journal' }, 
     { href: '/dreamworlds', label: 'Worlds' }, 
     { href: '/twins', label: 'Twins' }, 
-    { href: '/wrapped', label: 'Wrapped' }
+    { href: '/wrapped', label: 'Wrapped' },
+    { href: '/profile', label: 'Profile' }
   ]
 
   return (

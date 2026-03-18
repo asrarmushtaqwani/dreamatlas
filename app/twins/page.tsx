@@ -49,27 +49,60 @@ export default function TwinsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
-      {/* Background glow specific to twins */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255,255,255,0.03), transparent 70%)` }} />
+    <div style={{ position: 'relative', width: '100%', overflowX: 'hidden' }}>
 
-      <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto', display: 'flex', justifyContent: 'flex-end', padding: '20px 5vw 0' }}>
-        {twin && state === 'found' && (
-          <button onClick={() => setTwin(null)} className="btn-glass" style={{ padding: '10px 20px', fontSize: 13 }}>Search Again</button>
-        )}
-      </div>
+      {/* ── HERO SECTION ──────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', minHeight: '60vh', width: '100%', 
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        paddingTop: 80 
+      }}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255,255,255,0.03), transparent 70%)` }} />
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: 600, margin: '0 auto', padding: '40px 5vw' }}>
-        
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 16 }}>Dream Twins</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: 16, color: '#fff' }}>
-            Your unconscious <span >doppelgänger</span>
+        <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto', display: 'flex', justifyContent: 'flex-end', padding: '20px 5vw', position: 'absolute', top: 0, right: 0 }}>
+          {twin && state === 'found' && (
+            <button onClick={() => setTwin(null)} className="btn-glass" style={{ padding: '10px 20px', fontSize: 13, zIndex: 20 }}>Search Again</button>
+          )}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }}
+          style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 1000, padding: '0 24px' }}
+        >
+          <div style={{
+            display: 'inline-flex', padding: '8px 20px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 32, alignItems: 'center', gap: 10
+          }}>
+            <span style={{ width: 8, height: 8, background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent)' }} />
+            <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Dream Convergence</span>
+          </div>
+
+          <h1 style={{ 
+            fontFamily: 'var(--font-display)', fontWeight: 600,
+            fontSize: 'clamp(48px, 8vw, 96px)', lineHeight: 0.95, letterSpacing: '-0.03em',
+            marginBottom: 24
+          }}>
+            Your Twin.
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 18, lineHeight: 1.6, fontFamily: 'var(--font-body)', fontWeight: 400 }}>
+
+          <p style={{
+            fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-secondary)',
+            maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.6, fontWeight: 400
+          }}>
             Somewhere on earth, another mind dreams the exact same territories as you.
           </p>
         </motion.div>
+      </section>
+
+      {/* ── CONTENT GRID ─────────────────────────────────────────────────────── */}
+      <section style={{ 
+        position: 'relative', zIndex: 10, padding: '80px 5vw', minHeight: '50vh',
+        background: 'linear-gradient(180deg, transparent, rgba(5,5,8,0.8) 20%)',
+        display: 'flex', justifyContent: 'center'
+      }}>
+        <div style={{ width: '100%', maxWidth: 700 }}>
 
         <AnimatePresence mode="wait">
           {state === 'idle' && (
@@ -164,8 +197,8 @@ export default function TwinsPage() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
+        </div>
+      </section>
     </div>
   )
 }

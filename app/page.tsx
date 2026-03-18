@@ -12,15 +12,19 @@ function GlassHeroMesh() {
   
   useFrame((state, delta) => {
     if (mesh.current) {
+      // Base continuous rotation
       mesh.current.rotation.x += delta * 0.15
       mesh.current.rotation.y += delta * 0.2
+      // Interactive mouse follow (parallax physics)
+      mesh.current.position.x = THREE.MathUtils.lerp(mesh.current.position.x, state.pointer.x * 2.5, 0.05)
+      mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, state.pointer.y * 2.5, 0.05)
     }
   })
 
   return (
     <group position={[0, 0, 0]}>
       <Float floatIntensity={4} rotationIntensity={2} speed={3}>
-        <mesh ref={mesh} scale={2.5}>
+        <mesh ref={mesh} scale={0.8}>
           <icosahedronGeometry args={[1, 1]} />
           <MeshTransmissionMaterial 
             backside={false}
