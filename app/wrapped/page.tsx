@@ -73,7 +73,7 @@ export default function WrappedPage() {
         </div>
       </div>
 
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
         
         {/* Card */}
         <div className="glass-card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: `1px solid ${isHex ? accent + '40' : 'rgba(255,255,255,0.1)'}` }}>
