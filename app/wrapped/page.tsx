@@ -64,14 +64,7 @@ export default function WrappedPage() {
     <div style={{ minHeight: '100vh', padding: '0 0 100px', position: 'relative' }}>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 65% 55% at 50% 30%, ${isHex ? accent + '12' : 'var(--accent)'}, transparent)` }} />
 
-      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 100, marginBottom: 40 }}>
-        <div style={{ maxWidth: 500, margin: '0 auto' }}>
-          <Link href="/journal" style={{ color: 'var(--text-tertiary)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', transition: 'color 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
-          >← Return to Journal</Link>
-        </div>
-      </div>
+
 
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" as any }} style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
         

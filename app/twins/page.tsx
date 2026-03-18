@@ -53,13 +53,10 @@ export default function TwinsPage() {
       {/* Background glow specific to twins */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255,255,255,0.03), transparent 70%)` }} />
 
-      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <Link href="/map" style={{ color: 'var(--text-tertiary)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', transition: 'color 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
-          >← Return to Atlas</Link>
-        </div>
+      <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto', display: 'flex', justifyContent: 'flex-end', padding: '20px 5vw 0' }}>
+        {twin && state === 'found' && (
+          <button onClick={() => setTwin(null)} className="btn-glass" style={{ padding: '10px 20px', fontSize: 13 }}>Search Again</button>
+        )}
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 600, margin: '0 auto', padding: '40px 5vw' }}>

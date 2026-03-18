@@ -51,16 +51,12 @@ export default function DreamworldsPage() {
     <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
       
       {/* Header */}
-      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div style={{ padding: '40px 5vw 0', zIndex: 10 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <Link href="/map" style={{ color: 'var(--text-tertiary)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block', marginBottom: 12, transition: 'color 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
-          >← Return to Atlas</Link>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 44px)', fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.02em', marginBottom: 8, color: '#fff' }}>
             <span className="text-gradient">Dream</span>worlds
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>Nine territories of the collective unconscious.</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-display)', fontStyle: 'italic', margin: 0 }}>Nine territories of the collective unconscious.</p>
         </div>
       </div>
 

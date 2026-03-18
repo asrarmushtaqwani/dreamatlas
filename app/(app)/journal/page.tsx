@@ -50,11 +50,11 @@ export default function JournalPage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 100, position: 'relative' }}>
 
-      {/* Glass Header */}
-      <div className="glass-nav" style={{ padding: '32px 5vw 20px', position: 'sticky', top: 0, zIndex: 50 }}>
+      {/* Header */}
+      <div style={{ padding: '40px 5vw 0', zIndex: 50 }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 12 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontStyle: 'italic', fontWeight: 700, letterSpacing: '-0.02em' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 16 }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontStyle: 'italic', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
               Your <span className="text-gradient">journal</span>
             </h1>
             {!loading && dreams.length > 0 && (
